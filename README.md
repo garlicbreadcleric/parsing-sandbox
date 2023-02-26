@@ -7,18 +7,17 @@
 ```
 $ cargo bench
 
-test tests::parse_byte_bench         ... bench:       7,118 ns/iter (+/- 1,094)
-test tests::parse_byte_simd128_bench ... bench:       5,252 ns/iter (+/- 1,013)
-test tests::parse_byte_simd256_bench ... bench:      15,708 ns/iter (+/- 1,644)
-test tests::parse_byte_skip_bench    ... bench:       7,152 ns/iter (+/- 316)
-test tests::parse_char_bench         ... bench:       9,545 ns/iter (+/- 312)
-test tests::parse_char_skip_bench    ... bench:       6,896 ns/iter (+/- 447)
+test tests::parse_byte_bench         ... bench:       4,677 ns/iter (+/- 465)
+test tests::parse_byte_simd128_bench ... bench:       1,073 ns/iter (+/- 323)
+test tests::parse_byte_simd256_bench ... bench:       8,096 ns/iter (+/- 2,402)
+test tests::parse_byte_skip_bench    ... bench:       4,195 ns/iter (+/- 745)
+test tests::parse_char_bench         ... bench:       4,284 ns/iter (+/- 669)
+test tests::parse_char_skip_bench    ... bench:       4,507 ns/iter (+/- 353)
 ```
 
-### Reading from file
+### Reading from file (208 MB)
 
 ```
-$ rm -f input.txt && node create-file.js
 $ cargo build --release
 $ time ./target/release/parsing-sandbox bytes && \
     time ./target/release/parsing-sandbox bytes-skip && \
@@ -27,10 +26,10 @@ $ time ./target/release/parsing-sandbox bytes && \
     time ./target/release/parsing-sandbox chars && \
     time ./target/release/parsing-sandbox chars-skip
 
-./target/release/parsing-sandbox bytes  1.87s user 0.79s system 94% cpu 2.807 total
-./target/release/parsing-sandbox bytes-skip  1.77s user 0.70s system 97% cpu 2.530 total
-./target/release/parsing-sandbox bytes-simd128  1.02s user 0.68s system 99% cpu 1.709 total
-./target/release/parsing-sandbox bytes-simd256  2.92s user 0.73s system 99% cpu 3.674 total
-./target/release/parsing-sandbox chars  1.21s user 0.69s system 99% cpu 1.921 total
-./target/release/parsing-sandbox chars-skip  1.45s user 0.53s system 99% cpu 1.995 total
+./target/release/parsing-sandbox bytes  0.46s user 0.14s system 90% cpu 0.659 total
+./target/release/parsing-sandbox bytes-skip  0.43s user 0.11s system 99% cpu 0.546 total
+./target/release/parsing-sandbox bytes-simd128  0.24s user 0.11s system 99% cpu 0.354 total
+./target/release/parsing-sandbox bytes-simd256  0.66s user 0.11s system 99% cpu 0.778 total
+./target/release/parsing-sandbox chars  0.36s user 0.11s system 99% cpu 0.479 total
+./target/release/parsing-sandbox chars-skip  0.45s user 0.11s system 99% cpu 0.563 total
 ```
