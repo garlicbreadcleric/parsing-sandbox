@@ -39,13 +39,15 @@ _to do_
 ## Discussion
 
 - "Native" character counting is quite fast. I wonder if it does any vectorization under the hood as well? I should look into that and see if that's the case and if I can use the same techniques to increase parsing performance boost from vectorization.
-- For some reason, using 256-bit registers turns out to be much slower than scalar byte matching. When I started to measure parsing I at first thought one of the reasons is that lookup hits happen more often (as there are less 32-byte slices without any characters that break vectorization, than such 16-byte slices), but character counting benchmarks hint that this is not true as they don't involve any such lookups at all.
+- For some reason, using 256-bit registers turns out to be much slower than scalar byte matching. When I started to measure parsing I at first thought one of the reasons is that lookup hits happen more often[^2] (since a 32-byte slice is more likely to include a special character that forces the parser to switch to scalar mode, than a 16-byte slice), but character counting benchmarks hint that this is not true as they don't involve any such lookups at all.
 - Using 128-bit registers causes a significant (2-4 times) increase in performance on inputs with greater average distance between lookup hits, but on inputs with very dense lookup hits performance is the same as with scalar byte matching (or even slightly worse). In other words, vectorization shines on inputs with longer lines that have less square brackets in them.
-  - This means that the performance boost from vectorization might be less significant for an actual[^2] Markdown parser, as there will be more lookup hits (and more false-positives as well).
+  - This means that the performance boost from vectorization might be less significant for an actual Markdown parser, as there will be more lookup hits (and more false-positives as well).
     - On the other hand, CommonMark is parsed [in two passes](https://spec.commonmark.org/0.30/#appendix-a-parsing-strategy) with different lookups and the first pass probably won't have a lot of lookup hits so I think vectorization will still give a significant boost there.
 
 ## Links
 
 - [SIMDized check which bytes are in a set](http://0x80.pl/articles/simd-byte-lookup.html) — a blog post that describes some more advanced lookup techniques that I didn't have to use in this toy parser but might need when I try to parse a more complicated grammar with more symbols to look for.
 
-[^1]: "Native" character counting refers to `.chars().count()`
+[^1]: "Native" character counting refers to `.chars().count()`.
+
+[^2]: "Lookup hit" occurs when there's either a square bracket or a newline in the next 16/32 bytes. Whenever lookup hit happens the parser switches to scalar mode to process these 16/32 bytes one by one, and then returns to vector mode.
