@@ -42,7 +42,7 @@ _to do_
 - For some reason, using 256-bit registers turns out to be much slower than scalar byte matching. When I started to measure parsing I at first thought one of the reasons is that lookup hits happen more often (as there are less 32-byte slices without any characters that break vectorization, than such 16-byte slices), but character counting benchmarks hint that this is not true as they don't involve any such lookups at all.
 - Using 128-bit registers causes a significant (2-4 times) increase in performance on inputs with greater average distance between lookup hits, but on inputs with very dense lookup hits performance is the same as with scalar byte matching (or even slightly worse). In other words, vectorization shines on inputs with longer lines that have less square brackets in them.
   - This means that the performance boost from vectorization might be less significant for an actual[^2] Markdown parser, as there will be more lookup hits (and more false-positives as well).
-    - On the other hand, CommonMark is parsed [in two passes](https://spec.commonmark.org/0.30/#appendix-a-parsing-strategy) with different lookups and the first pass probably won't have a lot of lookups so I think vectorization will still give a significant boost there.
+    - On the other hand, CommonMark is parsed [in two passes](https://spec.commonmark.org/0.30/#appendix-a-parsing-strategy) with different lookups and the first pass probably won't have a lot of lookup hits so I think vectorization will still give a significant boost there.
 
 ## Links
 
