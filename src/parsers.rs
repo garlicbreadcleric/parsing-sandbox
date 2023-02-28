@@ -13,12 +13,7 @@ pub struct Parser<'a> {
 
 impl<'a> Parser<'a> {
   pub fn new(input: &str) -> Parser {
-    Parser {
-      input,
-      position: Position::default(),
-      range_start: None,
-      ranges: vec![],
-    }
+    Parser { input, position: Position::default(), range_start: None, ranges: vec![] }
   }
 
   pub fn parse_chars(&mut self) -> &[Range] {
@@ -30,10 +25,7 @@ impl<'a> Parser<'a> {
 
       match (char, self.range_start) {
         (']', Some(start)) => {
-          self.ranges.push(Range {
-            start,
-            end: self.position,
-          });
+          self.ranges.push(Range { start, end: self.position });
           self.range_start = None;
         }
         ('[', None) => {
@@ -72,10 +64,7 @@ impl<'a> Parser<'a> {
             self.range_start = Some(previous_position);
           }
           (b']', Some(start)) => {
-            self.ranges.push(Range {
-              start,
-              end: self.position,
-            });
+            self.ranges.push(Range { start, end: self.position });
             self.range_start = None;
           }
           _ => {}
@@ -116,10 +105,7 @@ impl<'a> Parser<'a> {
             self.range_start = Some(previous_position);
           }
           (b']', Some(start)) => {
-            self.ranges.push(Range {
-              start,
-              end: self.position,
-            });
+            self.ranges.push(Range { start, end: self.position });
             self.range_start = None;
           }
           _ => {}
@@ -169,8 +155,7 @@ impl<'a> Parser<'a> {
     let bytes = self.input.as_bytes();
 
     while self.position.offset + 31 < bytes.len() {
-      let bytes_vec =
-        unsafe { _mm256_loadu_si256((bytes[self.position.offset..].as_ptr()).cast()) };
+      let bytes_vec = unsafe { _mm256_loadu_si256((bytes[self.position.offset..].as_ptr()).cast()) };
 
       let lookup: Simd<u8, 32> = match self.range_start {
         Some(_) => {
@@ -226,16 +211,8 @@ pub mod tests {
       assert_eq!(
         ranges[0],
         Range {
-          start: Position {
-            line: 0,
-            character: 4,
-            offset: 4
-          },
-          end: Position {
-            line: 0,
-            character: 9,
-            offset: 9
-          }
+          start: Position { line: 0, character: 4, offset: 4 },
+          end: Position { line: 0, character: 9, offset: 9 }
         }
       )
     }
@@ -253,16 +230,8 @@ pub mod tests {
       assert_eq!(
         ranges[0],
         Range {
-          start: Position {
-            line: 0,
-            character: 4,
-            offset: 7
-          },
-          end: Position {
-            line: 0,
-            character: 9,
-            offset: 15
-          }
+          start: Position { line: 0, character: 4, offset: 7 },
+          end: Position { line: 0, character: 9, offset: 15 }
         }
       )
     }
@@ -280,16 +249,8 @@ pub mod tests {
       assert_eq!(
         ranges[0],
         Range {
-          start: Position {
-            line: 0,
-            character: 42,
-            offset: 42
-          },
-          end: Position {
-            line: 0,
-            character: 55,
-            offset: 55
-          }
+          start: Position { line: 0, character: 42, offset: 42 },
+          end: Position { line: 0, character: 55, offset: 55 }
         }
       )
     }
@@ -307,16 +268,8 @@ pub mod tests {
       assert_eq!(
         ranges[0],
         Range {
-          start: Position {
-            line: 0,
-            character: 36,
-            offset: 66
-          },
-          end: Position {
-            line: 0,
-            character: 49,
-            offset: 88
-          }
+          start: Position { line: 0, character: 36, offset: 66 },
+          end: Position { line: 0, character: 49, offset: 88 }
         }
       )
     }

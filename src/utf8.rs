@@ -35,21 +35,14 @@ pub fn count_utf8_characters(bytes: &[u8], vectorization: Option<Vectorization>)
 }
 
 pub fn count_utf8_characters_scalar(bytes: &[u8]) -> usize {
-  bytes
-    .iter()
-    .filter(|&&byte| !is_continuation_byte(byte))
-    .count()
+  bytes.iter().filter(|&&byte| !is_continuation_byte(byte)).count()
 }
 
 #[inline]
 pub fn count_utf8_characters_v128(v: __m128i) -> usize {
-  let cmp_result: Simd<u8, 16> = unsafe {
-    _mm_cmpeq_epi8(
-      _mm_and_si128(v, _mm_set1_epi8(0b1100_0000u8 as i8)),
-      _mm_set1_epi8(0b1000_0000u8 as i8),
-    )
-  }
-  .into();
+  let cmp_result: Simd<u8, 16> =
+    unsafe { _mm_cmpeq_epi8(_mm_and_si128(v, _mm_set1_epi8(0b1100_0000u8 as i8)), _mm_set1_epi8(0b1000_0000u8 as i8)) }
+      .into();
   let continuation_bytes = cmp_result.as_array().iter().filter(|&&c| c == 255).count();
 
   16 - continuation_bytes
@@ -58,10 +51,7 @@ pub fn count_utf8_characters_v128(v: __m128i) -> usize {
 #[inline]
 pub fn count_utf8_characters_v256(v: __m256i) -> usize {
   let cmp_result: Simd<u8, 32> = unsafe {
-    _mm256_cmpeq_epi8(
-      _mm256_and_si256(v, _mm256_set1_epi8(0b1100_0000u8 as i8)),
-      _mm256_set1_epi8(0b1000_0000u8 as i8),
-    )
+    _mm256_cmpeq_epi8(_mm256_and_si256(v, _mm256_set1_epi8(0b1100_0000u8 as i8)), _mm256_set1_epi8(0b1000_0000u8 as i8))
   }
   .into();
   let continuation_bytes = cmp_result.as_array().iter().filter(|&&c| c == 255).count();
@@ -102,32 +92,14 @@ mod tests {
     let bytes1 = SHORT_ASCII_INPUT.as_bytes();
     let bytes2 = SHORT_UNICODE_INPUT.as_bytes();
 
-    assert_eq!(
-      count_utf8_characters(bytes1, Some(Vectorization::V128)),
-      SHORT_ASCII_INPUT.chars().count()
-    );
-    assert_eq!(
-      count_utf8_characters(bytes2, Some(Vectorization::V128)),
-      SHORT_UNICODE_INPUT.chars().count()
-    );
+    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V128)), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V128)), SHORT_UNICODE_INPUT.chars().count());
 
-    assert_eq!(
-      count_utf8_characters(bytes1, Some(Vectorization::V32)),
-      SHORT_ASCII_INPUT.chars().count()
-    );
-    assert_eq!(
-      count_utf8_characters(bytes2, Some(Vectorization::V32)),
-      SHORT_UNICODE_INPUT.chars().count()
-    );
+    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V32)), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V32)), SHORT_UNICODE_INPUT.chars().count());
 
-    assert_eq!(
-      count_utf8_characters_scalar(bytes1),
-      SHORT_ASCII_INPUT.chars().count()
-    );
-    assert_eq!(
-      count_utf8_characters_scalar(bytes2),
-      SHORT_UNICODE_INPUT.chars().count()
-    );
+    assert_eq!(count_utf8_characters_scalar(bytes1), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters_scalar(bytes2), SHORT_UNICODE_INPUT.chars().count());
 
     {
       let mut count1 = 0;
@@ -138,10 +110,7 @@ mod tests {
         count1 += count_utf8_characters(&bytes1[i..right_bound], Some(Vectorization::V128));
         i += 16;
       }
-      assert_eq!(
-        count_utf8_characters(bytes1, Some(Vectorization::V128)),
-        count1
-      );
+      assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V128)), count1);
     }
 
     {
@@ -153,10 +122,7 @@ mod tests {
         count2 += count_utf8_characters(&bytes2[i..right_bound], Some(Vectorization::V128));
         i += 16;
       }
-      assert_eq!(
-        count_utf8_characters(bytes2, Some(Vectorization::V128)),
-        count2
-      );
+      assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V128)), count2);
     }
   }
 
