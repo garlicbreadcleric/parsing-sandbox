@@ -4,6 +4,8 @@
 
 Measured on MacBook Pro 2018, 2.6 GHz 6-Core Intel Core i7. Some of the available SIMD instruction sets include SSE, SSE2, SSSE3, SSE4.1, SSE4.2, AVX1.0.
 
+You can also check out [latest CI runs](https://github.com/garlicbreadcleric/parsing-sandbox/actions) to see benchmarks for specific commits. These are ran in the cloud so don't expect the numbers to be the same as in local measurements listed below.
+
 ### Counting UTF-8 characters in a byte array
 
 #### Smaller input
