@@ -49,12 +49,12 @@ impl<'a> Parser<'a> {
 
       let previous_position = self.position;
 
-      let character_len = get_character_len(byte);
+      let character_width = get_character_width(byte);
 
       self.position.character += 1;
-      self.position.offset += character_len;
+      self.position.offset += character_width;
 
-      if character_len == 1 {
+      if character_width == 1 {
         match (byte, self.range_start) {
           (b'\n', _) => {
             self.position.line += 1;
@@ -90,12 +90,12 @@ impl<'a> Parser<'a> {
         continue;
       }
 
-      let character_len = get_character_len(byte);
+      let character_width = get_character_width(byte);
 
-      self.position.offset += character_len;
+      self.position.offset += character_width;
       self.position.character += 1;
 
-      if character_len == 1 {
+      if character_width == 1 {
         match (byte, self.range_start) {
           (b'\n', _) => {
             self.position.line += 1;

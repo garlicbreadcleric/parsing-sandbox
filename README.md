@@ -39,6 +39,16 @@ _to do_
 ## Discussion
 
 - "Native" character counting is quite fast. I wonder if it does any vectorization under the hood as well? I should look into that and see if that's the case and if I can use the same techniques to increase parsing performance boost from vectorization.
+  - Native character counting does have an optimized version (`do_count_chars`) with some binary magic, but it only seems to be used for very long strings. This is the code for counting short strings:
+
+    ```rust
+    fn char_count_general_case(s: &[u8]) -> usize {
+        s.iter().filter(|&&byte| !super::validations::utf8_is_cont_byte(byte)).count()
+    }
+    ```
+
+    So, it does exactly the same thing as my scalar counter, and yet is several times faster on benchmarks (even after I changed my `is_continuation_byte` implementation to match `utf8_is_cont_byte`) and so far I have no idea why.
+  - I also tried changing `get_character_width` to match `utf8_char_width` (using a table of widths instead of comparisons), but that made scalar byte parser almost twice slower, so I reverted that.
 - For some reason, using 256-bit registers turns out to be much slower than scalar byte matching. When I started to measure parsing I at first thought one of the reasons is that lookup hits happen more often[^2] (since a 32-byte slice is more likely to include a special character that forces the parser to switch to scalar mode, than a 16-byte slice), but character counting benchmarks hint that this is not true as they don't involve any such lookups at all.
 - Using 128-bit registers causes a significant (2-4 times) increase in performance on inputs with greater average distance between lookup hits, but on inputs with very dense lookup hits performance is the same as with scalar byte matching (or even slightly worse). In other words, vectorization shines on inputs with longer lines that have less square brackets in them.
   - This means that the performance boost from vectorization might be less significant for an actual Markdown parser, as there will be more lookup hits (and more false-positives as well).

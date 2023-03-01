@@ -1,13 +1,14 @@
 use std::arch::x86_64::*;
 use std::simd::Simd;
 
-pub enum Vectorization {
+#[cfg(test)]
+enum Vectorization {
   V128,
-  V32,
+  V256,
 }
 
-// TODO: Runtime checks for SSE2/SSE3/AVX.
-pub fn count_utf8_characters(bytes: &[u8], vectorization: Option<Vectorization>) -> usize {
+#[cfg(test)]
+fn count_utf8_characters(bytes: &[u8], vectorization: Option<Vectorization>) -> usize {
   let mut i = 0;
   let mut count = 0;
   match vectorization {
@@ -18,7 +19,7 @@ pub fn count_utf8_characters(bytes: &[u8], vectorization: Option<Vectorization>)
         i += 16;
       }
     }
-    Some(Vectorization::V32) => {
+    Some(Vectorization::V256) => {
       while i + 31 < bytes.len() {
         let v = unsafe { _mm256_loadu_si256((bytes[i..].as_ptr()).cast()) };
         count += count_utf8_characters_v256(v);
@@ -61,11 +62,11 @@ pub fn count_utf8_characters_v256(v: __m256i) -> usize {
 
 #[inline]
 pub fn is_continuation_byte(byte: u8) -> bool {
-  byte & 0b1100_0000 == 0b1000_0000
+  (byte as i8) < -64
 }
 
 #[inline]
-pub fn get_character_len(starting_byte: u8) -> usize {
+pub fn get_character_width(starting_byte: u8) -> usize {
   if starting_byte < 0b1000_0000 {
     1
   } else if starting_byte < 0b1110_0000 {
@@ -95,8 +96,8 @@ mod tests {
     assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V128)), SHORT_ASCII_INPUT.chars().count());
     assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V128)), SHORT_UNICODE_INPUT.chars().count());
 
-    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V32)), SHORT_ASCII_INPUT.chars().count());
-    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V32)), SHORT_UNICODE_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V256)), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V256)), SHORT_UNICODE_INPUT.chars().count());
 
     assert_eq!(count_utf8_characters_scalar(bytes1), SHORT_ASCII_INPUT.chars().count());
     assert_eq!(count_utf8_characters_scalar(bytes2), SHORT_UNICODE_INPUT.chars().count());
@@ -138,7 +139,7 @@ mod tests {
   pub fn count_characters_vector256_bench(b: &mut Bencher) {
     let mut count = 0;
     b.iter(|| {
-      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::V32));
+      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::V256));
     });
   }
 
