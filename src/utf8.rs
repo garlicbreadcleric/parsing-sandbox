@@ -86,8 +86,6 @@ mod tests {
   use super::*;
   use crate::test_data::*;
 
-  pub static BENCHMARK_INPUT: &str = LONG_MULTILINE_INPUT;
-
   #[test]
   pub fn count_characters_test() {
     let bytes1 = SHORT_ASCII_INPUT.as_bytes();

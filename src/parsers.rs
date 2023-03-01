@@ -197,8 +197,6 @@ pub mod tests {
   use super::*;
   use crate::test_data::*;
 
-  pub static BENCHMARK_INPUT: &str = LONG_MULTILINE_INPUT;
-
   #[test]
   pub fn parse_small_ascii_test() {
     let ranges1 = Parser::new(SHORT_ASCII_INPUT).parse_chars().to_vec();

@@ -1,3 +1,5 @@
+pub static BENCHMARK_INPUT: &str = LONG_MULTILINE_INPUT;
+
 pub static SHORT_ASCII_INPUT: &str = "foo [bar] baz";
 pub static SHORT_UNICODE_INPUT: &str = "йцу [фыв] ячс";
 
