@@ -1,10 +1,11 @@
 use std::arch::x86_64::*;
-use std::simd::Simd;
+use std::simd::{u8x16, Simd, SimdPartialEq};
 
 #[cfg(test)]
 enum Vectorization {
-  V128,
-  V256,
+  Intel128,
+  Intel256,
+  Portable128,
 }
 
 #[cfg(test)]
@@ -12,18 +13,25 @@ fn count_utf8_characters(bytes: &[u8], vectorization: Option<Vectorization>) -> 
   let mut i = 0;
   let mut count = 0;
   match vectorization {
-    Some(Vectorization::V128) => {
+    Some(Vectorization::Intel128) => {
       while i + 15 < bytes.len() {
         let v = unsafe { _mm_loadu_si128((bytes[i..].as_ptr()).cast()) };
         count += count_utf8_characters_v128(v);
         i += 16;
       }
     }
-    Some(Vectorization::V256) => {
+    Some(Vectorization::Intel256) => {
       while i + 31 < bytes.len() {
         let v = unsafe { _mm256_loadu_si256((bytes[i..].as_ptr()).cast()) };
         count += count_utf8_characters_v256(v);
         i += 32;
+      }
+    }
+    Some(Vectorization::Portable128) => {
+      while i + 15 < bytes.len() {
+        let v = u8x16::from_slice(&bytes[i..]);
+        count += count_utf8_characters_v128_portable(v);
+        i += 16;
       }
     }
     None => {}
@@ -47,6 +55,12 @@ pub fn count_utf8_characters_v128(v: __m128i) -> usize {
   let continuation_bytes = cmp_result.as_array().iter().filter(|&&c| c == 255).count();
 
   16 - continuation_bytes
+}
+
+#[inline]
+pub fn count_utf8_characters_v128_portable(v: u8x16) -> usize {
+  let cmp_result = (v & u8x16::splat(0b1100_0000)).simd_eq(u8x16::splat(0b1000_0000));
+  cmp_result.to_array().iter().filter(|&&c| !c).count()
 }
 
 #[inline]
@@ -91,11 +105,14 @@ mod tests {
     let bytes1 = SHORT_ASCII_INPUT.as_bytes();
     let bytes2 = SHORT_UNICODE_INPUT.as_bytes();
 
-    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V128)), SHORT_ASCII_INPUT.chars().count());
-    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V128)), SHORT_UNICODE_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::Intel128)), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::Intel128)), SHORT_UNICODE_INPUT.chars().count());
 
-    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V256)), SHORT_ASCII_INPUT.chars().count());
-    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V256)), SHORT_UNICODE_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::Intel256)), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::Intel256)), SHORT_UNICODE_INPUT.chars().count());
+
+    assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::Portable128)), SHORT_ASCII_INPUT.chars().count());
+    assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::Portable128)), SHORT_UNICODE_INPUT.chars().count());
 
     assert_eq!(count_utf8_characters_scalar(bytes1), SHORT_ASCII_INPUT.chars().count());
     assert_eq!(count_utf8_characters_scalar(bytes2), SHORT_UNICODE_INPUT.chars().count());
@@ -106,10 +123,10 @@ mod tests {
 
       while i < bytes1.len() {
         let right_bound = (i + 16).min(bytes1.len());
-        count1 += count_utf8_characters(&bytes1[i..right_bound], Some(Vectorization::V128));
+        count1 += count_utf8_characters(&bytes1[i..right_bound], Some(Vectorization::Intel128));
         i += 16;
       }
-      assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::V128)), count1);
+      assert_eq!(count_utf8_characters(bytes1, Some(Vectorization::Intel128)), count1);
     }
 
     {
@@ -118,10 +135,10 @@ mod tests {
 
       while i < bytes2.len() {
         let right_bound = (i + 16).min(bytes2.len());
-        count2 += count_utf8_characters(&bytes2[i..right_bound], Some(Vectorization::V128));
+        count2 += count_utf8_characters(&bytes2[i..right_bound], Some(Vectorization::Intel128));
         i += 16;
       }
-      assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::V128)), count2);
+      assert_eq!(count_utf8_characters(bytes2, Some(Vectorization::Intel128)), count2);
     }
   }
 
@@ -129,7 +146,7 @@ mod tests {
   pub fn count_characters_vector128_bench(b: &mut Bencher) {
     let mut count = 0;
     b.iter(|| {
-      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::V128));
+      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel128));
     });
   }
 
@@ -137,7 +154,15 @@ mod tests {
   pub fn count_characters_vector256_bench(b: &mut Bencher) {
     let mut count = 0;
     b.iter(|| {
-      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::V256));
+      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel256));
+    });
+  }
+
+  #[bench]
+  pub fn count_characters_vector128_portable_bench(b: &mut Bencher) {
+    let mut count = 0;
+    b.iter(|| {
+      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Portable128));
     });
   }
 

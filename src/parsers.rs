@@ -1,5 +1,5 @@
 use std::arch::x86_64::*;
-use std::simd::{Simd, SimdUint};
+use std::simd::{u8x16, Simd, SimdPartialEq, SimdUint};
 
 use crate::types::*;
 use crate::utf8::*;
@@ -187,6 +187,43 @@ impl<'a> Parser<'a> {
 
     &self.ranges
   }
+
+  pub fn parse_v128_portable(&mut self) -> &[Range] {
+    let bytes = self.input.as_bytes();
+
+    while self.position.offset + 15 < bytes.len() {
+      let bytes_vec = u8x16::from_slice(&bytes[self.position.offset..]);
+
+      let lookup = match self.range_start {
+        Some(_) => {
+          // Lookup: ']', '\n'
+          let eq_93 = bytes_vec.simd_eq(u8x16::splat(b']'));
+          let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
+
+          eq_93 | eq_10
+        }
+        None => {
+          // Lookup: '[', '\n'
+
+          let eq_91 = bytes_vec.simd_eq(u8x16::splat(b'['));
+          let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
+
+          eq_91 | eq_10
+        }
+      };
+
+      if lookup.any() {
+        self.parse_bytes_limited(16);
+      } else {
+        self.position.character += count_utf8_characters_v128_portable(bytes_vec);
+        self.position.offset += 16;
+      }
+    }
+
+    self.parse_bytes();
+
+    &self.ranges
+  }
 }
 
 #[cfg(test)]
@@ -203,8 +240,9 @@ pub mod tests {
     let ranges2 = Parser::new(SHORT_ASCII_INPUT).parse_bytes().to_vec();
     let ranges3 = Parser::new(SHORT_ASCII_INPUT).parse_v128().to_vec();
     let ranges4 = Parser::new(SHORT_ASCII_INPUT).parse_v256().to_vec();
+    let ranges5 = Parser::new(SHORT_ASCII_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2, ranges3, ranges4] {
+    for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -222,8 +260,9 @@ pub mod tests {
     let ranges2 = Parser::new(SHORT_UNICODE_INPUT).parse_bytes().to_vec();
     let ranges3 = Parser::new(SHORT_UNICODE_INPUT).parse_v128().to_vec();
     let ranges4 = Parser::new(SHORT_UNICODE_INPUT).parse_v256().to_vec();
+    let ranges5 = Parser::new(SHORT_UNICODE_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2, ranges3, ranges4] {
+    for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -241,8 +280,9 @@ pub mod tests {
     let ranges2 = Parser::new(LONG_ASCII_INPUT).parse_bytes().to_vec();
     let ranges3 = Parser::new(LONG_ASCII_INPUT).parse_v128().to_vec();
     let ranges4 = Parser::new(LONG_ASCII_INPUT).parse_v256().to_vec();
+    let ranges5 = Parser::new(LONG_ASCII_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2, ranges3, ranges4] {
+    for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -260,8 +300,9 @@ pub mod tests {
     let ranges2 = Parser::new(LONG_UNICODE_INPUT).parse_bytes().to_vec();
     let ranges3 = Parser::new(LONG_UNICODE_INPUT).parse_v128().to_vec();
     let ranges4 = Parser::new(LONG_UNICODE_INPUT).parse_v256().to_vec();
+    let ranges5 = Parser::new(LONG_UNICODE_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2, ranges3, ranges4] {
+    for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -279,15 +320,18 @@ pub mod tests {
     let ranges2 = Parser::new(SHORT_MULTILINE_INPUT).parse_bytes().to_vec();
     let ranges3 = Parser::new(SHORT_MULTILINE_INPUT).parse_v128().to_vec();
     let ranges4 = Parser::new(SHORT_MULTILINE_INPUT).parse_v256().to_vec();
+    let ranges5 = Parser::new(SHORT_MULTILINE_INPUT).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
     assert_eq!(ranges2.len(), ranges3.len());
     assert_eq!(ranges3.len(), ranges4.len());
+    assert_eq!(ranges4.len(), ranges5.len());
 
     for i in 0..ranges1.len() {
       assert_eq!(ranges1[i], ranges2[i]);
       assert_eq!(ranges2[i], ranges3[i]);
       assert_eq!(ranges3[i], ranges4[i]);
+      assert_eq!(ranges4[i], ranges5[i]);
     }
   }
 
@@ -297,15 +341,18 @@ pub mod tests {
     let ranges2 = Parser::new(LONG_MULTILINE_INPUT).parse_bytes().to_vec();
     let ranges3 = Parser::new(LONG_MULTILINE_INPUT).parse_v128().to_vec();
     let ranges4 = Parser::new(LONG_MULTILINE_INPUT).parse_v256().to_vec();
+    let ranges5 = Parser::new(LONG_MULTILINE_INPUT).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
     assert_eq!(ranges2.len(), ranges3.len());
     assert_eq!(ranges3.len(), ranges4.len());
+    assert_eq!(ranges4.len(), ranges5.len());
 
     for i in 0..ranges1.len() {
       assert_eq!(ranges1[i], ranges2[i]);
       assert_eq!(ranges2[i], ranges3[i]);
       assert_eq!(ranges3[i], ranges4[i]);
+      assert_eq!(ranges4[i], ranges5[i]);
     }
   }
 
@@ -334,6 +381,13 @@ pub mod tests {
   pub fn parse_v256_bench(b: &mut Bencher) {
     b.iter(|| {
       Parser::new(BENCHMARK_INPUT).parse_v256();
+    })
+  }
+
+  #[bench]
+  pub fn parse_v128_portable_bench(b: &mut Bencher) {
+    b.iter(|| {
+      Parser::new(BENCHMARK_INPUT).parse_v128_portable();
     })
   }
 }
