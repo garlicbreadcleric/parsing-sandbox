@@ -167,7 +167,7 @@ mod tests {
   }
 
   #[bench]
-  pub fn count_characters_scalar_bench(b: &mut Bencher) {
+  pub fn count_characters_bytes_bench(b: &mut Bencher) {
     let mut count = 0;
     b.iter(|| {
       count += count_utf8_characters_scalar(BENCHMARK_INPUT.as_bytes());
@@ -175,7 +175,7 @@ mod tests {
   }
 
   #[bench]
-  pub fn count_characters_native_bench(b: &mut Bencher) {
+  pub fn count_characters_chars_bench(b: &mut Bencher) {
     let mut count = 0;
     b.iter(|| {
       count += BENCHMARK_INPUT.chars().count();
