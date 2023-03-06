@@ -13,11 +13,16 @@ Here's how to run benchmarks:
 cargo bench
 
 # Measure reading and parsing from file.
-hyperfine './target/release/parsing-sandbox chars' \
-  './target/release/parsing-sandbox bytes' \
-  './target/release/parsing-sandbox vector128' \
-  './target/release/parsing-sandbox vector256' \
-  './target/release/parsing-sandbox vector128portable'
+hyperfine './target/release/parsing-sandbox chars seq' \
+  './target/release/parsing-sandbox bytes seq' \
+  './target/release/parsing-sandbox vector128 seq' \
+  './target/release/parsing-sandbox vector256 seq' \
+  './target/release/parsing-sandbox vector128portable seq' \
+  './target/release/parsing-sandbox chars par' \
+  './target/release/parsing-sandbox bytes par' \
+  './target/release/parsing-sandbox vector128 par' \
+  './target/release/parsing-sandbox vector256 par' \
+  './target/release/parsing-sandbox vector128portable par'
 ```
 
 Note that hyperfine measurements include time needed to read file contents into memory. This is done on purpose to see how much the performance differences of various parsing methods are watered down by I/O performance.
@@ -50,11 +55,17 @@ Note that hyperfine measurements include time needed to read file contents into 
 |-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
 | 6,702 ns/iter (+/- 821) | 4,308 ns/iter (+/- 185) | 2,123 ns/iter (+/- 105) | 5,676 ns/iter (+/- 259) | 2,197 ns/iter (+/- 112) |
 
-#### From file (>200 MB)
+#### From files (~375 MB, sequential)
 
-| chars                     | bytes                   | vector128               | vector256               | vector128portable       |
-|---------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
-| 755.3 ms/iter (+/- 152.2) | 574.8 ms/iter (+/- 6.8) | 448.3 ms/iter (+/- 6.9) | 670.4 ms/iter (+/- 4.5) | 445.9 ms/iter (+/- 2.5) |
+| chars                  | bytes                  | vector128               | vector256              | vector128portable       |
+|------------------------|------------------------|-------------------------|------------------------|-------------------------|
+| 1,251 ms/iter (+/- 20) | 1,004 ms/iter (+/- 13) | 731.0 ms/iter (+/- 7.5) | 1,167 ms/iter (+/- 12) | 739.7 ms/iter (+/- 8.1) |
+
+#### From files (~375 MB, parallel)
+
+| chars                   | bytes                   | vector128               | vector256                | vector128portable       |
+|-------------------------|-------------------------|-------------------------|--------------------------|-------------------------|
+| 277.3 ms/iter (+/- 7.7) | 228.2 ms/iter (+/- 2.3) | 173.8 ms/iter (+/- 4.4) | 280.4 ms/iter (+/- 21.6) | 180.6 ms/iter (+/- 2.0) |
 
 ## Discussion
 
@@ -74,6 +85,7 @@ Note that hyperfine measurements include time needed to read file contents into 
   - This means that the performance boost from vectorization might be less significant for an actual Markdown parser, as there will be more lookup hits (and more false-positives as well).
     - On the other hand, CommonMark is parsed [in two passes](https://spec.commonmark.org/0.30/#appendix-a-parsing-strategy) with different lookups and the first pass probably won't have a lot of lookup hits so I think vectorization will still give a significant boost there.
 - Even though portable 128-bit version performs worse than direct intrinsic calls on character counting, the speed of parsing is exactly the same between the two. I should look into the differences in ASM output for character counting.
+- Distributing workload between multiple threads made a much bigger difference than vectorization. Also, it took like two lines of code, whereas vectorization requires a custom parser implementation for every supported character encoding.
 
 ## Links
 

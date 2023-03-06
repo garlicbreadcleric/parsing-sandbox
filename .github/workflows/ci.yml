@@ -45,4 +45,14 @@ jobs:
         with:
           command: bench
       - name: Run benchmarks (reading from file)
-        run: hyperfine './target/release/parsing-sandbox chars' './target/release/parsing-sandbox bytes' './target/release/parsing-sandbox vector128' './target/release/parsing-sandbox vector256' './target/release/parsing-sandbox vector128portable'
+        run: |
+          hyperfine './target/release/parsing-sandbox chars seq' \
+            './target/release/parsing-sandbox bytes seq' \
+            './target/release/parsing-sandbox vector128 seq' \
+            './target/release/parsing-sandbox vector256 seq' \
+            './target/release/parsing-sandbox vector128portable seq' \
+            './target/release/parsing-sandbox chars par' \
+            './target/release/parsing-sandbox bytes par' \
+            './target/release/parsing-sandbox vector128 par' \
+            './target/release/parsing-sandbox vector256 par' \
+            './target/release/parsing-sandbox vector128portable par'

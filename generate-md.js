@@ -38,12 +38,14 @@ const snippet = `# Grune, Dick, and Ceriel J. H. Jacobs. _Parsing Techniques: A 
 
 **Определение**: _Парсинг_ --- процесс структурирования линейного предствления в соответствии с некоторой грамматикой [@grune_parsingtechniques_en_1990, 1].`;
 
-if (fs.existsSync("input.txt")) {
-  fs.rmSync("input.txt");
-}
+for (let i = 0; i < 100; i++) {
+  if (fs.existsSync(`input.txt`)) {
+    fs.rmSync(`input.txt`);
+  }
 
-const f = fs.openSync("input.txt", "w");
-for (let i = 0; i < 55000; i++) {
-  fs.writeSync(f, snippet);
+  const f = fs.openSync(`input/input-${i}.txt`, "w");
+  for (let j = 0; j < 1000; j++) {
+    fs.writeSync(f, snippet);
+  }
+  fs.closeSync(f);
 }
-fs.closeSync(f);
