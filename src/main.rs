@@ -50,7 +50,7 @@ pub fn main() {
     Some("seq") => ModeName::Seq,
     Some("par") => ModeName::Par,
     _ => {
-      eprintln!("Expected second argumentt to be mode name (one of: 'seq', 'par').");
+      eprintln!("Expected second argument to be mode name (one of: 'seq', 'par').");
       exit(1);
     }
   };
