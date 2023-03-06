@@ -6,6 +6,22 @@ Measured on MacBook Pro 2018, 2.6 GHz 6-Core Intel Core i7. Some of the availabl
 
 You can also check out [latest CI runs](https://github.com/garlicbreadcleric/parsing-sandbox/actions) to see benchmarks for specific commits. These are ran in the cloud so don't expect the numbers to be the same as in local measurements listed below.
 
+Here's how to run benchmarks:
+
+```bash
+# Measure counting/parsing from memory.
+cargo bench
+
+# Measure reading and parsing from file.
+hyperfine './target/release/parsing-sandbox chars' \
+  './target/release/parsing-sandbox bytes' \
+  './target/release/parsing-sandbox vector128' \
+  './target/release/parsing-sandbox vector256' \
+  './target/release/parsing-sandbox vector128portable'
+```
+
+Note that hyperfine measurements include time needed to read file contents into memory. This is done on purpose to see how much the performance differences of various parsing methods are watered down by I/O performance.
+
 ### Counting UTF-8 characters in a byte array
 
 #### Smaller input
@@ -34,9 +50,11 @@ You can also check out [latest CI runs](https://github.com/garlicbreadcleric/par
 |-------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
 | 6,702 ns/iter (+/- 821) | 4,308 ns/iter (+/- 185) | 2,123 ns/iter (+/- 105) | 5,676 ns/iter (+/- 259) | 2,197 ns/iter (+/- 112) |
 
-#### From file
+#### From file (>200 MB)
 
-_to do_
+| chars                     | bytes                   | vector128               | vector256               | vector128portable       |
+|---------------------------|-------------------------|-------------------------|-------------------------|-------------------------|
+| 755.3 ms/iter (+/- 152.2) | 574.8 ms/iter (+/- 6.8) | 448.3 ms/iter (+/- 6.9) | 670.4 ms/iter (+/- 4.5) | 445.9 ms/iter (+/- 2.5) |
 
 ## Discussion
 

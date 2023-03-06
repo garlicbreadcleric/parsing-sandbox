@@ -18,11 +18,31 @@ jobs:
           profile: minimal
           toolchain: nightly
           override: true
+      - name: Install Node.js 14.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.x'
+      - name: Install hyperfine
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: hyperfine
+
+      - name: Build with release profile
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - name: Prepare benchmark data
+        run: node ./generate-md.js
+
       - name: Run unit tests
         uses: actions-rs/cargo@v1
         with:
           command: test
-      - name: Run benchmarks
+      - name: Run benchmarks (reading from memory)
         uses: actions-rs/cargo@v1
         with:
           command: bench
+      - name: Run benchmarks (reading from file)
+        run: hyperfine './target/release/parsing-sandbox chars' './target/release/parsing-sandbox bytes' './target/release/parsing-sandbox vector128' './target/release/parsing-sandbox vector256' './target/release/parsing-sandbox vector128portable'
