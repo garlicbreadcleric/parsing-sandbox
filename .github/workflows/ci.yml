@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - name: Install Rust toolchain (nightly)
         uses: actions-rs/toolchain@v1
         with:

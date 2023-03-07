@@ -181,4 +181,11 @@ mod tests {
       count += BENCHMARK_INPUT.chars().count();
     });
   }
+
+  #[bench]
+  pub fn count_characters_simdutf(b: &mut Bencher) {
+    b.iter(|| {
+      crate::simdutf::count_utf8(BENCHMARK_INPUT.as_bytes());
+    });
+  }
 }

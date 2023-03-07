@@ -1,0 +1,3 @@
+[submodule "libsimdutf"]
+	path = libsimdutf
+	url = https://github.com/simdutf/simdutf

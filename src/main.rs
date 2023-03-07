@@ -2,7 +2,7 @@ use std::process::exit;
 
 use rayon::prelude::*;
 
-use parsing_sandbox::parsers::Parser;
+use parsing_sandbox::parsers::*;
 
 #[derive(Copy, Clone, Debug)]
 pub enum ParserName {

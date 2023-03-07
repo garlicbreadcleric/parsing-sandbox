@@ -2,6 +2,7 @@
 #![feature(portable_simd)]
 
 pub mod parsers;
+pub mod simdutf;
 pub mod types;
 pub mod utf8;
 
