@@ -183,9 +183,11 @@ mod tests {
   }
 
   #[bench]
+  #[cfg(not(miri))]
   pub fn count_characters_simdutf(b: &mut Bencher) {
+    let mut count = 0;
     b.iter(|| {
-      unsafe { simdutf::count_utf32_from_utf8(BENCHMARK_INPUT.as_bytes()) };
+      count += unsafe { simdutf::count_utf32_from_utf8(BENCHMARK_INPUT.as_bytes()) };
     });
   }
 }
