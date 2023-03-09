@@ -232,7 +232,7 @@ pub mod tests {
   use test::bench::Bencher;
 
   use super::*;
-  use crate::test_data::*;
+  use crate::tests::test_data::*;
 
   #[test]
   pub fn parse_small_ascii_test() {

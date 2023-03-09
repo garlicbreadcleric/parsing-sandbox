@@ -21,15 +21,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "cmake"
-version = "0.1.49"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db34956e100b30725f2eb215f90d4871051239535632f84fea3bc92722c66b7c"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "crossbeam-channel"
 version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -116,10 +107,8 @@ dependencies = [
 name = "parsing-sandbox"
 version = "0.1.0"
 dependencies = [
- "cc",
- "cmake",
- "libc",
  "rayon",
+ "simdutf",
 ]
 
 [[package]]
@@ -149,3 +138,11 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "simdutf"
+version = "0.3.2"
+source = "git+https://github.com/garlicbreadcleric/simdutf-rs.git?branch=main#2354549b5cc3c2bc7c7e1c9b0cf2c0f55bc36f6a"
+dependencies = [
+ "cc",
+]

@@ -98,7 +98,7 @@ mod tests {
   use test::bench::Bencher;
 
   use super::*;
-  use crate::test_data::*;
+  use crate::tests::test_data::*;
 
   #[test]
   pub fn count_characters_test() {
@@ -185,7 +185,7 @@ mod tests {
   #[bench]
   pub fn count_characters_simdutf(b: &mut Bencher) {
     b.iter(|| {
-      crate::simdutf::count_utf8(BENCHMARK_INPUT.as_bytes());
+      unsafe { simdutf::count_utf32_from_utf8(BENCHMARK_INPUT.as_bytes()) };
     });
   }
 }
