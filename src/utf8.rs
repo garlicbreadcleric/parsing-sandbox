@@ -109,10 +109,12 @@ mod tests {
       let c2 = count_utf8_characters(s.as_str().as_bytes(), Some(Vectorization::Intel256));
       let c3 = count_utf8_characters(s.as_str().as_bytes(), Some(Vectorization::Portable128));
       let c4 = count_utf8_characters_scalar(s.as_str().as_bytes());
+      let c5 = s.chars().count();
 
       assert_eq!(c1, c2, "c1 == c2");
       assert_eq!(c2, c3, "c2 == c3");
       assert_eq!(c3, c4, "c3 == c4");
+      assert_eq!(c4, c5, "c4 == c5");
     }
   }
 

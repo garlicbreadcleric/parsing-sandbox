@@ -1,5 +1,7 @@
 pub static BENCHMARK_INPUT: &str = LONG_MULTILINE_INPUT;
 
+pub static GIBBERISH: &str = "АaaAa0AAAaА0aАAАaAaАAAAaaaAA0aa]aaaaaaАaaA0AAa]00AaA]]aaА0aA]АaА]АaA00]a0А]]0a0АА]0AaaАa0]aaАA0AА0A0AAAAaАAАААAAaА]]a0]aaA]0A0aAaAaAaaaaА0a0A]]A0a0a]aА0AaAAaa]]AaA0AААAa]]AAaА0AA]0АaAa0AAАААaA]]AAaАA0A0А00a0aaAААA0a0AАaA]aАa0A]0a0AАaAa0aА]0АAAa]А]AА]]AaA0AaA0000aaАa]AaAaA]aAAAА]aAA[]AAaaAaa0Aaaaa]E]";
+
 pub static SHORT_ASCII_INPUT: &str = "foo [bar] baz";
 pub static SHORT_UNICODE_INPUT: &str = "йцу [фыв] ячс";
 

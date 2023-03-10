@@ -211,7 +211,7 @@ pub mod tests {
 
   proptest! {
     #[test]
-    fn parse_property_test(s in "[0-9a-zA-Zа-яА-Я\\[\\]]{300}") {
+    fn parse_property_test(s in "[0-9a-zA-Zа-яА-Я\\[\\]\\n]{300}") {
       let ranges1 = CharParser::new(s.as_str()).parse_chars().to_vec();
       let ranges2 = CharParser::new(s.as_str()).parse_bytes().to_vec();
       let ranges3 = CharParser::new(s.as_str()).parse_v128().to_vec();
@@ -234,13 +234,11 @@ pub mod tests {
 
   #[test]
   pub fn parse_gibberish_test() {
-    let gibberish = "АaaAa0AAAaА0aАAАaAaАAAAaaaAA0aa]aaaaaaАaaA0AAa]00AaA]]aaА0aA]АaА]АaA00]a0А]]0a0АА]0AaaАa0]aaАA0AА0A0AAAAaАAАААAAaА]]a0]aaA]0A0aAaAaAaaaaА0a0A]]A0a0a]aА0AaAAaa]]AaA0AААAa]]AAaА0AA]0АaAa0AAАААaA]]AAaАA0A0А00a0aaAААA0a0AАaA]aАa0A]0a0AАaAa0aА]0АAAa]А]AА]]AaA0AaA0000aaАa]AaAaA]aAAAА]aAA[]AAaaAaa0Aaaaa]E]";
-
-    let ranges1 = CharParser::new(gibberish).parse_chars().to_vec();
-    let ranges2 = CharParser::new(gibberish).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(gibberish).parse_v128().to_vec();
-    let ranges4 = CharParser::new(gibberish).parse_v256().to_vec();
-    let ranges5 = CharParser::new(gibberish).parse_v128_portable().to_vec();
+    let ranges1 = CharParser::new(GIBBERISH).parse_chars().to_vec();
+    let ranges2 = CharParser::new(GIBBERISH).parse_bytes().to_vec();
+    let ranges3 = CharParser::new(GIBBERISH).parse_v128().to_vec();
+    let ranges4 = CharParser::new(GIBBERISH).parse_v256().to_vec();
+    let ranges5 = CharParser::new(GIBBERISH).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
     assert_eq!(ranges2.len(), ranges3.len());
