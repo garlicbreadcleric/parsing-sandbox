@@ -81,7 +81,7 @@ pub fn is_continuation_byte(byte: u8) -> bool {
 
 #[inline]
 pub fn get_character_width(starting_byte: u8) -> usize {
-  if starting_byte < 0b1000_0000 {
+  if starting_byte < 0b1100_0000 {
     1
   } else if starting_byte < 0b1110_0000 {
     2

@@ -2,7 +2,7 @@ use std::process::exit;
 
 use rayon::prelude::*;
 
-use parsing_sandbox::parsers::*;
+use parsing_sandbox::parsers_char::*;
 
 #[derive(Copy, Clone, Debug)]
 pub enum ParserName {
@@ -20,7 +20,7 @@ pub enum ModeName {
 }
 
 fn parse(input: &str, parser_name: ParserName) -> usize {
-  let mut parser = Parser::new(input);
+  let mut parser = CharParser::new(input);
   match parser_name {
     ParserName::Chars => parser.parse_chars(),
     ParserName::Bytes => parser.parse_bytes(),

@@ -41,7 +41,7 @@ Note that hyperfine measurements include time needed to read file contents into 
 |---------------------|----------------------|----------------------|---------------|----------------------|
 | 199 ns/iter (+/- 9) | 934 ns/iter (+/- 27) | 464 ns/iter (+/- 84) | 2,933 ns/iter | 646 ns/iter (+/- 28) |
 
-### Parsing \[pairs of square brackets\]
+### Parsing \[pairs of square brackets\] and producing character offsets
 
 #### From memory (smaller input)
 
@@ -66,6 +66,10 @@ Note that hyperfine measurements include time needed to read file contents into 
 | chars                   | bytes                   | vector128               | vector256                | vector128portable       |
 |-------------------------|-------------------------|-------------------------|--------------------------|-------------------------|
 | 277.3 ms/iter (+/- 7.7) | 228.2 ms/iter (+/- 2.3) | 173.8 ms/iter (+/- 4.4) | 280.4 ms/iter (+/- 21.6) | 180.6 ms/iter (+/- 2.0) |
+
+### Parsing \[pairs of square brackets\] and producing UTF-16 code point offsets
+
+_to do_
 
 ## Discussion
 
