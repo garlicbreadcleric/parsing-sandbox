@@ -1,0 +1,11 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc f061379eb85ae962786a552bef09a0af7a704d6f0bd2244bf9121ac5a0618c26 # shrinks to s = "АaaAa0AAAaА0aАAАaAaАAAAaaaAA0aa]aaaaaaАaaA0AAa]00AaA]]aaА0aA]АaА]АaA00]a0А]]0a0АА]0AaaАa0]aaАA0AА0A0AAAAaАAАААAAaА]]a0]aaA]0A0aAaAaAaaaaА0a0A]]A0a0a]aА0AaAAaa]]AaA0AААAa]]AAaА0AA]0АaAa0AAАААaA]]AAaАA0A0А00a0aaAААA0a0AАaA]aАa0A]0a0AАaAa0aА]0АAAa]А]AА]]AaA0AaA0000aaАa]AaAaA]aAAAА]aAA[]AAaaAaa0Aaaaa]E]"
+cc 1f8bd69559bba65bfdf0d29db105c7d29140be8e4da6f61f81f2cad3efbab7f3 # shrinks to s = "A]aaAAA0a0]AAAAaa000Aaa]]aА]AАa0AAAА00AAaaАaAА]aa0A]aAa0aAa0]aa0А]aaАА0aa]a]0aAАAAA]АAaAAA]АA]]aaaAa0AА0AAAaaAAА00]A]Aaa]A0]]0A000AaaaАa0]0AA0А]Aa0AАAAAA0aAAААА00a0a]0aaA0]0a0Aa00aA0]a0A]0]aa]aAААaААa]a]aA]0АAA]aAАAА0А0aА]a0A]AАAaA]0A000aAA]aaa]aaAa]]00Аa0]aa]0aАА000aaaA]А0]aAАА0a0a]АAAa]A][]А0Aaa0a"
+cc fb1c285cecda8cff8e505c22fb6602934034673d27bc6fccd7f97bed084a1b0b # shrinks to s = "]AАaАA]]aA]aa[A00AАA0АAAaAA0A]АAa]AA]AaAAAA]a]AAAaaАaАAAAaaaA00a0A0А]aAaAaa]a0AА0Aaa0aA]]a]a]A]А]А]А0AaAА0aaА000A00A0А0АAAАA]А0А00aA0АaAaААA]АaA]]АAА]0aAAАAAAAaa[AА00]АAAA]aaaA0АaАA0AААaAА0aA00AaAА]A0aaa00]]]0AaAa0aa0Аa0aA0AA0A00]aa0Aa]АAA0AA0Аa0aАAAA0]0Aaaaa0a]AА0aaAa0000A0ААAa]A0AA00]0AaA]A0a[a]a]"
+cc 47e485d6bfa22fc19f9c971b50b51b1c2d519160973df44c2713eb6a9c12bc65 # shrinks to s = "]]aА0]]0000a]]a]aAa0А]AAА0Аaa0aАAA0AaA00AA]A]]AaA]]0АaAАAАА]А0AААA0A]]0А0AАa]aaaaaAaaaAA0AАAАaaАА]А]aAa0a0]]AA]]aa0А00aAa]Аa00]А00]aAaАAa0aaAA]aa0aAaA]A00АAaaaAАА0]0Aa]0АAaAa0А0АAa]]00]ААaА]a]Aa00]0a]aА00000aa]aAaAА0aaa]0A00AAAaa0aАa0AaaaaAaA0a0000]AAaA00aА00AA]A0]aa0А0]А0АAAАaaА[]0AАAAАAa0]0AA0a00a"
+cc ead58409e5b264495d98052be7b65557becd6eda5467878564fd1a67070add0d # shrinks to s = "]AAА0А]A0]][aААAa]Аa0aAaАА]]aA]0a]00aAА]aa0A]0AА0Aa]AaА0aАaAAaaАAa00AAaAA]aAaA]]00]A]0AaaA0aAa0Aa]АaА0a0aАaa0a0aaА0АaaАA]0AАA0aaAA0aAaAА]]0АAА]aАAaАAАA00AАaa]Aa]]A00A]0aaA0Aa00aAaAАAA]0A0]]aААА00aaaAAАaАaAАAA0A0AAА0Aa]a0Aa0АA0a]0АAaАAa0a0]]]]A0aaAAaa0АaА0]]aAАA0A]aa0AaАaa0А]0aaaА]a0А0]Аa0aAАА[]aA]]]"

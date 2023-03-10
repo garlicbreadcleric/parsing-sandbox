@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 rayon = "1.7"
 simdutf = { git = "https://github.com/garlicbreadcleric/simdutf-rs.git", branch = "main" }
+
+[dev-dependencies]
+proptest = "1.0.0"

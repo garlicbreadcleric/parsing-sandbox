@@ -1,7 +1,6 @@
 //! Parsers that produce offsets based on UTF-16 code points (LSP-compatible).
 
-use std::arch::x86_64::*;
-use std::simd::{u8x16, Simd, SimdPartialEq, SimdUint};
+use std::simd::{u8x16, SimdPartialEq};
 
 use crate::types::*;
 use crate::utf8::*;
@@ -133,18 +132,35 @@ pub mod tests {
   extern crate test;
   use test::bench::Bencher;
 
+  use proptest::prelude::*;
+
   use super::*;
   use crate::tests::test_data::*;
+
+  proptest! {
+    #[test]
+    fn parse_property_test(s in "[0-9a-zA-Zа-яА-Я\\[\\]]{300}") {
+      let ranges1 = Utf16Parser::new(s.as_str()).parse_chars().to_vec();
+      let ranges2 = Utf16Parser::new(s.as_str()).parse_bytes().to_vec();
+      let ranges3 = Utf16Parser::new(s.as_str()).parse_v128_portable().to_vec();
+
+      assert_eq!(ranges1.len(), ranges2.len());
+      assert_eq!(ranges2.len(), ranges3.len());
+
+      for i in 0..ranges1.len() {
+        assert_eq!(ranges1[i], ranges2[i]);
+        assert_eq!(ranges2[i], ranges3[i]);
+      }
+    }
+  }
 
   #[test]
   pub fn parse_small_ascii_test() {
     let ranges1 = Utf16Parser::new(SHORT_ASCII_INPUT).parse_chars().to_vec();
     let ranges2 = Utf16Parser::new(SHORT_ASCII_INPUT).parse_bytes().to_vec();
-    // let ranges3 = Utf16Parser::new(SHORT_ASCII_INPUT).parse_v128().to_vec();
-    // let ranges4 = Utf16Parser::new(SHORT_ASCII_INPUT).parse_v256().to_vec();
-    // let ranges5 = Utf16Parser::new(SHORT_ASCII_INPUT).parse_v128_portable().to_vec();
+    let ranges3 = Utf16Parser::new(SHORT_ASCII_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2 /*, ranges3, ranges4, ranges5*/] {
+    for ranges in vec![ranges1, ranges2, ranges3] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -160,11 +176,9 @@ pub mod tests {
   pub fn parse_small_unicode_test() {
     let ranges1 = Utf16Parser::new(SHORT_UNICODE_INPUT).parse_chars().to_vec();
     let ranges2 = Utf16Parser::new(SHORT_UNICODE_INPUT).parse_bytes().to_vec();
-    // let ranges3 = Utf16Parser::new(SHORT_UNICODE_INPUT).parse_v128().to_vec();
-    // let ranges4 = Utf16Parser::new(SHORT_UNICODE_INPUT).parse_v256().to_vec();
-    let ranges5 = Utf16Parser::new(SHORT_UNICODE_INPUT).parse_v128_portable().to_vec();
+    let ranges3 = Utf16Parser::new(SHORT_UNICODE_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2, /*ranges3, ranges4,*/ ranges5] {
+    for ranges in vec![ranges1, ranges2, ranges3] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -180,11 +194,9 @@ pub mod tests {
   pub fn medium_ascii_test() {
     let ranges1 = Utf16Parser::new(LONG_ASCII_INPUT).parse_chars().to_vec();
     let ranges2 = Utf16Parser::new(LONG_ASCII_INPUT).parse_bytes().to_vec();
-    // let ranges3 = Utf16Parser::new(LONG_ASCII_INPUT).parse_v128().to_vec();
-    // let ranges4 = Utf16Parser::new(LONG_ASCII_INPUT).parse_v256().to_vec();
-    let ranges5 = Utf16Parser::new(LONG_ASCII_INPUT).parse_v128_portable().to_vec();
+    let ranges3 = Utf16Parser::new(LONG_ASCII_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2, /*ranges3, ranges4,*/ ranges5] {
+    for ranges in vec![ranges1, ranges2, ranges3] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -200,11 +212,9 @@ pub mod tests {
   pub fn medium_unicode_test() {
     let ranges1 = Utf16Parser::new(LONG_UNICODE_INPUT).parse_chars().to_vec();
     let ranges2 = Utf16Parser::new(LONG_UNICODE_INPUT).parse_bytes().to_vec();
-    // let ranges3 = Utf16Parser::new(LONG_UNICODE_INPUT).parse_v128().to_vec();
-    // let ranges4 = Utf16Parser::new(LONG_UNICODE_INPUT).parse_v256().to_vec();
-    let ranges5 = Utf16Parser::new(LONG_UNICODE_INPUT).parse_v128_portable().to_vec();
+    let ranges3 = Utf16Parser::new(LONG_UNICODE_INPUT).parse_v128_portable().to_vec();
 
-    for ranges in vec![ranges1, ranges2 /*, ranges3, ranges4*/, ranges5] {
+    for ranges in vec![ranges1, ranges2, ranges3] {
       assert_eq!(ranges.len(), 1);
       assert_eq!(
         ranges[0],
@@ -220,20 +230,14 @@ pub mod tests {
   pub fn short_multiline_test() {
     let ranges1 = Utf16Parser::new(SHORT_MULTILINE_INPUT).parse_chars().to_vec();
     let ranges2 = Utf16Parser::new(SHORT_MULTILINE_INPUT).parse_bytes().to_vec();
-    // let ranges3 = Utf16Parser::new(SHORT_MULTILINE_INPUT).parse_v128().to_vec();
-    // let ranges4 = Utf16Parser::new(SHORT_MULTILINE_INPUT).parse_v256().to_vec();
-    let ranges5 = Utf16Parser::new(SHORT_MULTILINE_INPUT).parse_v128_portable().to_vec();
+    let ranges3 = Utf16Parser::new(SHORT_MULTILINE_INPUT).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
-    // assert_eq!(ranges2.len(), ranges3.len());
-    // assert_eq!(ranges3.len(), ranges4.len());
-    assert_eq!(ranges2.len(), ranges5.len());
+    assert_eq!(ranges2.len(), ranges3.len());
 
     for i in 0..ranges1.len() {
       assert_eq!(ranges1[i], ranges2[i]);
-      // assert_eq!(ranges2[i], ranges3[i]);
-      // assert_eq!(ranges3[i], ranges4[i]);
-      assert_eq!(ranges2[i], ranges5[i]);
+      assert_eq!(ranges2[i], ranges3[i]);
     }
   }
 
@@ -241,20 +245,14 @@ pub mod tests {
   pub fn long_multiline_test() {
     let ranges1 = Utf16Parser::new(LONG_MULTILINE_INPUT).parse_chars().to_vec();
     let ranges2 = Utf16Parser::new(LONG_MULTILINE_INPUT).parse_bytes().to_vec();
-    // let ranges3 = Utf16Parser::new(LONG_MULTILINE_INPUT).parse_v128().to_vec();
-    // let ranges4 = Utf16Parser::new(LONG_MULTILINE_INPUT).parse_v256().to_vec();
-    let ranges5 = Utf16Parser::new(LONG_MULTILINE_INPUT).parse_v128_portable().to_vec();
+    let ranges3 = Utf16Parser::new(LONG_MULTILINE_INPUT).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
-    // assert_eq!(ranges2.len(), ranges3.len());
-    // assert_eq!(ranges3.len(), ranges4.len());
-    assert_eq!(ranges2.len(), ranges5.len());
+    assert_eq!(ranges2.len(), ranges3.len());
 
     for i in 0..ranges1.len() {
       assert_eq!(ranges1[i], ranges2[i]);
-      // assert_eq!(ranges2[i], ranges3[i]);
-      // assert_eq!(ranges3[i], ranges4[i]);
-      assert_eq!(ranges2[i], ranges5[i]);
+      assert_eq!(ranges2[i], ranges3[i]);
     }
   }
 

@@ -97,8 +97,24 @@ mod tests {
   extern crate test;
   use test::bench::Bencher;
 
+  use proptest::prelude::*;
+
   use super::*;
   use crate::tests::test_data::*;
+
+  proptest! {
+    #[test]
+    fn count_characters_property_test(s in "\\PC*") {
+      let c1 = count_utf8_characters(s.as_str().as_bytes(), Some(Vectorization::Intel128));
+      let c2 = count_utf8_characters(s.as_str().as_bytes(), Some(Vectorization::Intel256));
+      let c3 = count_utf8_characters(s.as_str().as_bytes(), Some(Vectorization::Portable128));
+      let c4 = count_utf8_characters_scalar(s.as_str().as_bytes());
+
+      assert_eq!(c1, c2, "c1 == c2");
+      assert_eq!(c2, c3, "c2 == c3");
+      assert_eq!(c3, c4, "c3 == c4");
+    }
+  }
 
   #[test]
   pub fn count_characters_test() {
