@@ -14,8 +14,9 @@ pub struct CharParser<'a> {
 }
 
 impl<'a> CharParser<'a> {
-  pub fn new(input: &str) -> CharParser {
-    CharParser { input, position: Position::default(), range_start: None, ranges: vec![] }
+  #[must_use]
+  pub fn new(input: &'a str) -> Self {
+    Self { input, position: Position::default(), range_start: None, ranges: vec![] }
   }
 
   pub fn parse_chars(&mut self) -> &[Range] {
@@ -93,21 +94,18 @@ impl<'a> CharParser<'a> {
     while self.position.offset + 15 < bytes.len() {
       let bytes_vec = unsafe { _mm_loadu_si128((bytes[self.position.offset..].as_ptr()).cast()) };
 
-      let lookup: Simd<u8, 16> = match self.range_start {
-        Some(_) => {
-          // Lookup: ']', '\n'
-          let eq_93 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b']' as i8)) };
-          let eq_10 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b'\n' as i8)) };
+      let lookup: Simd<u8, 16> = if self.range_start.is_some() {
+        // Lookup: ']', '\n'
+        let eq_93 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b']' as i8)) };
+        let eq_10 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b'\n' as i8)) };
 
-          unsafe { _mm_or_si128(eq_93, eq_10) }
-        }
-        None => {
-          // Lookup: '[', '\n'
-          let eq_91 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b'[' as i8)) };
-          let eq_10 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b'\n' as i8)) };
+        unsafe { _mm_or_si128(eq_93, eq_10) }
+      } else {
+        // Lookup: '[', '\n'
+        let eq_91 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b'[' as i8)) };
+        let eq_10 = unsafe { _mm_cmpeq_epi8(bytes_vec, _mm_set1_epi8(b'\n' as i8)) };
 
-          unsafe { _mm_or_si128(eq_91, eq_10) }
-        }
+        unsafe { _mm_or_si128(eq_91, eq_10) }
       }
       .into();
 
@@ -130,21 +128,18 @@ impl<'a> CharParser<'a> {
     while self.position.offset + 31 < bytes.len() {
       let bytes_vec = unsafe { _mm256_loadu_si256((bytes[self.position.offset..].as_ptr()).cast()) };
 
-      let lookup: Simd<u8, 32> = match self.range_start {
-        Some(_) => {
-          // Lookup: ']', '\n'
-          let eq_93 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b']' as i8)) };
-          let eq_10 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b'\n' as i8)) };
+      let lookup: Simd<u8, 32> = if self.range_start.is_some() {
+        // Lookup: ']', '\n'
+        let eq_93 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b']' as i8)) };
+        let eq_10 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b'\n' as i8)) };
 
-          unsafe { _mm256_or_si256(eq_93, eq_10) }
-        }
-        None => {
-          // Lookup: '[', '\n'
-          let eq_91 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b'[' as i8)) };
-          let eq_10 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b'\n' as i8)) };
+        unsafe { _mm256_or_si256(eq_93, eq_10) }
+      } else {
+        // Lookup: '[', '\n'
+        let eq_91 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b'[' as i8)) };
+        let eq_10 = unsafe { _mm256_cmpeq_epi8(bytes_vec, _mm256_set1_epi8(b'\n' as i8)) };
 
-          unsafe { _mm256_or_si256(eq_91, eq_10) }
-        }
+        unsafe { _mm256_or_si256(eq_91, eq_10) }
       }
       .into();
 
@@ -167,22 +162,19 @@ impl<'a> CharParser<'a> {
     while self.position.offset + 15 < bytes.len() {
       let bytes_vec = u8x16::from_slice(&bytes[self.position.offset..]);
 
-      let lookup = match self.range_start {
-        Some(_) => {
-          // Lookup: ']', '\n'
-          let eq_93 = bytes_vec.simd_eq(u8x16::splat(b']'));
-          let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
+      let lookup = if self.range_start.is_some() {
+        // Lookup: ']', '\n'
+        let eq_93 = bytes_vec.simd_eq(u8x16::splat(b']'));
+        let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
 
-          eq_93 | eq_10
-        }
-        None => {
-          // Lookup: '[', '\n'
+        eq_93 | eq_10
+      } else {
+        // Lookup: '[', '\n'
 
-          let eq_91 = bytes_vec.simd_eq(u8x16::splat(b'['));
-          let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
+        let eq_91 = bytes_vec.simd_eq(u8x16::splat(b'['));
+        let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
 
-          eq_91 | eq_10
-        }
+        eq_91 | eq_10
       };
 
       if lookup.any() {
@@ -269,7 +261,7 @@ pub mod tests {
           start: Position { line: 0, character: 4, offset: 4 },
           end: Position { line: 0, character: 9, offset: 9 }
         }
-      )
+      );
     }
   }
 
@@ -289,7 +281,7 @@ pub mod tests {
           start: Position { line: 0, character: 4, offset: 7 },
           end: Position { line: 0, character: 9, offset: 15 }
         }
-      )
+      );
     }
   }
 
@@ -309,7 +301,7 @@ pub mod tests {
           start: Position { line: 0, character: 42, offset: 42 },
           end: Position { line: 0, character: 55, offset: 55 }
         }
-      )
+      );
     }
   }
 
@@ -329,7 +321,7 @@ pub mod tests {
           start: Position { line: 0, character: 36, offset: 66 },
           end: Position { line: 0, character: 49, offset: 88 }
         }
-      )
+      );
     }
   }
 
@@ -379,34 +371,34 @@ pub mod tests {
   pub fn parse_chars_bench(b: &mut Bencher) {
     b.iter(|| {
       CharParser::new(BENCHMARK_INPUT).parse_chars();
-    })
+    });
   }
 
   #[bench]
   pub fn parse_bytes_bench(b: &mut Bencher) {
     b.iter(|| {
       CharParser::new(BENCHMARK_INPUT).parse_bytes();
-    })
+    });
   }
 
   #[bench]
   pub fn parse_v128_bench(b: &mut Bencher) {
     b.iter(|| {
       CharParser::new(BENCHMARK_INPUT).parse_v128();
-    })
+    });
   }
 
   #[bench]
   pub fn parse_v256_bench(b: &mut Bencher) {
     b.iter(|| {
       CharParser::new(BENCHMARK_INPUT).parse_v256();
-    })
+    });
   }
 
   #[bench]
   pub fn parse_v128_portable_bench(b: &mut Bencher) {
     b.iter(|| {
       CharParser::new(BENCHMARK_INPUT).parse_v128_portable();
-    })
+    });
   }
 }

@@ -16,8 +16,9 @@ pub struct Utf16Parser<'a> {
 }
 
 impl<'a> Utf16Parser<'a> {
-  pub fn new(input: &str) -> Utf16Parser {
-    Utf16Parser { input, offset: 0, line: 0, character: 0, character_offset: 0, range_start: None, ranges: vec![] }
+  #[must_use]
+  pub const fn new(input: &'a str) -> Self {
+    Self { input, offset: 0, line: 0, character: 0, character_offset: 0, range_start: None, ranges: vec![] }
   }
 
   pub fn parse_chars(&mut self) -> &[Range] {
@@ -96,22 +97,19 @@ impl<'a> Utf16Parser<'a> {
     while self.offset + 15 < bytes.len() {
       let bytes_vec = u8x16::from_slice(&bytes[self.offset..]);
 
-      let lookup = match self.range_start {
-        Some(_) => {
-          // Lookup: ']', '\n'
-          let eq_93 = bytes_vec.simd_eq(u8x16::splat(b']'));
-          let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
+      let lookup = if self.range_start.is_some() {
+        // Lookup: ']', '\n'
+        let eq_93 = bytes_vec.simd_eq(u8x16::splat(b']'));
+        let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
 
-          eq_93 | eq_10
-        }
-        None => {
-          // Lookup: '[', '\n'
+        eq_93 | eq_10
+      } else {
+        // Lookup: '[', '\n'
 
-          let eq_91 = bytes_vec.simd_eq(u8x16::splat(b'['));
-          let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
+        let eq_91 = bytes_vec.simd_eq(u8x16::splat(b'['));
+        let eq_10 = bytes_vec.simd_eq(u8x16::splat(b'\n'));
 
-          eq_91 | eq_10
-        }
+        eq_91 | eq_10
       };
 
       if lookup.any() {
@@ -168,7 +166,7 @@ pub mod tests {
           start: Position { line: 0, character: 4, offset: 4 },
           end: Position { line: 0, character: 9, offset: 9 }
         }
-      )
+      );
     }
   }
 
@@ -186,7 +184,7 @@ pub mod tests {
           start: Position { line: 0, character: 4, offset: 7 },
           end: Position { line: 0, character: 9, offset: 15 }
         }
-      )
+      );
     }
   }
 
@@ -204,7 +202,7 @@ pub mod tests {
           start: Position { line: 0, character: 42, offset: 42 },
           end: Position { line: 0, character: 55, offset: 55 }
         }
-      )
+      );
     }
   }
 
@@ -222,7 +220,7 @@ pub mod tests {
           start: Position { line: 0, character: 36, offset: 66 },
           end: Position { line: 0, character: 49, offset: 88 }
         }
-      )
+      );
     }
   }
 
@@ -260,20 +258,20 @@ pub mod tests {
   pub fn parse_chars_bench(b: &mut Bencher) {
     b.iter(|| {
       Utf16Parser::new(BENCHMARK_INPUT).parse_chars();
-    })
+    });
   }
 
   #[bench]
   pub fn parse_bytes_bench(b: &mut Bencher) {
     b.iter(|| {
       Utf16Parser::new(BENCHMARK_INPUT).parse_bytes();
-    })
+    });
   }
 
   #[bench]
   pub fn parse_v128_portable_bench(b: &mut Bencher) {
     b.iter(|| {
       Utf16Parser::new(BENCHMARK_INPUT).parse_v128_portable();
-    })
+    });
   }
 }

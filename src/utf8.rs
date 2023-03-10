@@ -2,6 +2,7 @@ use std::arch::x86_64::*;
 use std::simd::{u8x16, Simd, SimdPartialEq};
 
 #[cfg(test)]
+#[derive(Copy, Clone)]
 enum Vectorization {
   Intel128,
   Intel256,
@@ -75,12 +76,12 @@ pub fn count_utf8_characters_v256(v: __m256i) -> usize {
 }
 
 #[inline]
-pub fn is_continuation_byte(byte: u8) -> bool {
+pub const fn is_continuation_byte(byte: u8) -> bool {
   (byte as i8) < -64
 }
 
 #[inline]
-pub fn get_character_width(starting_byte: u8) -> usize {
+pub const fn get_character_width(starting_byte: u8) -> usize {
   if starting_byte < 0b1100_0000 {
     1
   } else if starting_byte < 0b1110_0000 {
