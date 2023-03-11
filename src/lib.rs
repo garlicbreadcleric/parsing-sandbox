@@ -45,9 +45,9 @@
 )]
 #![deny(clippy::semicolon_if_nothing_returned)]
 
-pub mod parsers_char;
-pub mod parsers_utf16;
 pub mod types;
+pub mod utf16_parser;
+pub mod utf32_parser;
 pub mod utf8;
 
 #[cfg(test)]

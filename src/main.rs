@@ -2,8 +2,8 @@ use std::process::exit;
 
 use rayon::prelude::*;
 
-use parsing_sandbox::parsers_char::*;
-use parsing_sandbox::parsers_utf16::*;
+use parsing_sandbox::utf16_parser::*;
+use parsing_sandbox::utf32_parser::*;
 
 #[derive(Copy, Clone)]
 pub enum ParserName {
@@ -22,12 +22,12 @@ pub enum ModeName {
 
 #[derive(Copy, Clone)]
 pub enum OutputName {
-  Char,
+  Utf32,
   Utf16,
 }
 
 fn parse_char(input: &str, parser_name: ParserName) -> usize {
-  let mut parser = CharParser::new(input);
+  let mut parser = Utf32Parser::new(input);
   match parser_name {
     ParserName::Chars => parser.parse_chars(),
     ParserName::Bytes => parser.parse_bytes(),
@@ -74,10 +74,10 @@ pub fn main() {
   };
 
   let output_name = match args.get(3).map(|s| s.as_str()) {
-    Some("char") => OutputName::Char,
+    Some("utf32") => OutputName::Utf32,
     Some("utf16") => OutputName::Utf16,
     _ => {
-      eprintln!("Expected third argument to be output name (one of: 'char', 'utf16').");
+      eprintln!("Expected third argument to be output name (one of: 'utf32', 'utf16').");
       exit(1);
     }
   };
@@ -90,7 +90,7 @@ pub fn main() {
         let input = input.as_str();
 
         match output_name {
-          OutputName::Char => sum += parse_char(input, parser_name),
+          OutputName::Utf32 => sum += parse_char(input, parser_name),
           OutputName::Utf16 => sum += parse_utf16(input, parser_name),
         }
       }
@@ -103,7 +103,7 @@ pub fn main() {
         let input = input.as_str();
 
         match output_name {
-          OutputName::Char => parse_char(input, parser_name),
+          OutputName::Utf32 => parse_char(input, parser_name),
           OutputName::Utf16 => parse_utf16(input, parser_name),
         }
       })

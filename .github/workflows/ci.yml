@@ -25,23 +25,9 @@ jobs:
         with:
           node-version: '14.x'
       - name: Install just
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: just
+        run: cargo install just
       - name: Install hyperfine
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: hyperfine
-
-      - name: Build with release profile
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-      - name: Prepare benchmark data
-        run: node ./generate-md.js
+        run: cargo install hyperfine
 
       - name: Run unit tests
         run: just test

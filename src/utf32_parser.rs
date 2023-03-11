@@ -6,14 +6,14 @@ use std::simd::{u8x16, Simd, SimdPartialEq, SimdUint};
 use crate::types::*;
 use crate::utf8::*;
 
-pub struct CharParser<'a> {
+pub struct Utf32Parser<'a> {
   input: &'a str,
   position: Position,
   range_start: Option<Position>,
   ranges: Vec<Range>,
 }
 
-impl<'a> CharParser<'a> {
+impl<'a> Utf32Parser<'a> {
   #[must_use]
   pub fn new(input: &'a str) -> Self {
     Self { input, position: Position::default(), range_start: None, ranges: vec![] }
@@ -204,11 +204,11 @@ pub mod tests {
   proptest! {
     #[test]
     fn parse_property_test(s in "[0-9a-zA-Zа-яА-Я\\[\\]\\n]{300}") {
-      let ranges1 = CharParser::new(s.as_str()).parse_chars().to_vec();
-      let ranges2 = CharParser::new(s.as_str()).parse_bytes().to_vec();
-      let ranges3 = CharParser::new(s.as_str()).parse_v128().to_vec();
-      let ranges4 = CharParser::new(s.as_str()).parse_v256().to_vec();
-      let ranges5 = CharParser::new(s.as_str()).parse_v128_portable().to_vec();
+      let ranges1 = Utf32Parser::new(s.as_str()).parse_chars().to_vec();
+      let ranges2 = Utf32Parser::new(s.as_str()).parse_bytes().to_vec();
+      let ranges3 = Utf32Parser::new(s.as_str()).parse_v128().to_vec();
+      let ranges4 = Utf32Parser::new(s.as_str()).parse_v256().to_vec();
+      let ranges5 = Utf32Parser::new(s.as_str()).parse_v128_portable().to_vec();
 
       assert_eq!(ranges1.len(), ranges2.len());
       assert_eq!(ranges2.len(), ranges3.len());
@@ -226,11 +226,11 @@ pub mod tests {
 
   #[test]
   pub fn parse_gibberish_test() {
-    let ranges1 = CharParser::new(GIBBERISH).parse_chars().to_vec();
-    let ranges2 = CharParser::new(GIBBERISH).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(GIBBERISH).parse_v128().to_vec();
-    let ranges4 = CharParser::new(GIBBERISH).parse_v256().to_vec();
-    let ranges5 = CharParser::new(GIBBERISH).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(GIBBERISH).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(GIBBERISH).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(GIBBERISH).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(GIBBERISH).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(GIBBERISH).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
     assert_eq!(ranges2.len(), ranges3.len());
@@ -247,11 +247,11 @@ pub mod tests {
 
   #[test]
   pub fn parse_small_ascii_test() {
-    let ranges1 = CharParser::new(SHORT_ASCII_INPUT).parse_chars().to_vec();
-    let ranges2 = CharParser::new(SHORT_ASCII_INPUT).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(SHORT_ASCII_INPUT).parse_v128().to_vec();
-    let ranges4 = CharParser::new(SHORT_ASCII_INPUT).parse_v256().to_vec();
-    let ranges5 = CharParser::new(SHORT_ASCII_INPUT).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(SHORT_ASCII_INPUT).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(SHORT_ASCII_INPUT).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(SHORT_ASCII_INPUT).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(SHORT_ASCII_INPUT).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(SHORT_ASCII_INPUT).parse_v128_portable().to_vec();
 
     for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
@@ -267,11 +267,11 @@ pub mod tests {
 
   #[test]
   pub fn parse_small_unicode_test() {
-    let ranges1 = CharParser::new(SHORT_UNICODE_INPUT).parse_chars().to_vec();
-    let ranges2 = CharParser::new(SHORT_UNICODE_INPUT).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(SHORT_UNICODE_INPUT).parse_v128().to_vec();
-    let ranges4 = CharParser::new(SHORT_UNICODE_INPUT).parse_v256().to_vec();
-    let ranges5 = CharParser::new(SHORT_UNICODE_INPUT).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(SHORT_UNICODE_INPUT).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(SHORT_UNICODE_INPUT).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(SHORT_UNICODE_INPUT).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(SHORT_UNICODE_INPUT).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(SHORT_UNICODE_INPUT).parse_v128_portable().to_vec();
 
     for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
@@ -287,11 +287,11 @@ pub mod tests {
 
   #[test]
   pub fn medium_ascii_test() {
-    let ranges1 = CharParser::new(LONG_ASCII_INPUT).parse_chars().to_vec();
-    let ranges2 = CharParser::new(LONG_ASCII_INPUT).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(LONG_ASCII_INPUT).parse_v128().to_vec();
-    let ranges4 = CharParser::new(LONG_ASCII_INPUT).parse_v256().to_vec();
-    let ranges5 = CharParser::new(LONG_ASCII_INPUT).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(LONG_ASCII_INPUT).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(LONG_ASCII_INPUT).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(LONG_ASCII_INPUT).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(LONG_ASCII_INPUT).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(LONG_ASCII_INPUT).parse_v128_portable().to_vec();
 
     for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
@@ -307,11 +307,11 @@ pub mod tests {
 
   #[test]
   pub fn medium_unicode_test() {
-    let ranges1 = CharParser::new(LONG_UNICODE_INPUT).parse_chars().to_vec();
-    let ranges2 = CharParser::new(LONG_UNICODE_INPUT).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(LONG_UNICODE_INPUT).parse_v128().to_vec();
-    let ranges4 = CharParser::new(LONG_UNICODE_INPUT).parse_v256().to_vec();
-    let ranges5 = CharParser::new(LONG_UNICODE_INPUT).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(LONG_UNICODE_INPUT).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(LONG_UNICODE_INPUT).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(LONG_UNICODE_INPUT).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(LONG_UNICODE_INPUT).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(LONG_UNICODE_INPUT).parse_v128_portable().to_vec();
 
     for ranges in vec![ranges1, ranges2, ranges3, ranges4, ranges5] {
       assert_eq!(ranges.len(), 1);
@@ -327,11 +327,11 @@ pub mod tests {
 
   #[test]
   pub fn short_multiline_test() {
-    let ranges1 = CharParser::new(SHORT_MULTILINE_INPUT).parse_chars().to_vec();
-    let ranges2 = CharParser::new(SHORT_MULTILINE_INPUT).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(SHORT_MULTILINE_INPUT).parse_v128().to_vec();
-    let ranges4 = CharParser::new(SHORT_MULTILINE_INPUT).parse_v256().to_vec();
-    let ranges5 = CharParser::new(SHORT_MULTILINE_INPUT).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(SHORT_MULTILINE_INPUT).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(SHORT_MULTILINE_INPUT).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(SHORT_MULTILINE_INPUT).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(SHORT_MULTILINE_INPUT).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(SHORT_MULTILINE_INPUT).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
     assert_eq!(ranges2.len(), ranges3.len());
@@ -348,11 +348,11 @@ pub mod tests {
 
   #[test]
   pub fn long_multiline_test() {
-    let ranges1 = CharParser::new(LONG_MULTILINE_INPUT).parse_chars().to_vec();
-    let ranges2 = CharParser::new(LONG_MULTILINE_INPUT).parse_bytes().to_vec();
-    let ranges3 = CharParser::new(LONG_MULTILINE_INPUT).parse_v128().to_vec();
-    let ranges4 = CharParser::new(LONG_MULTILINE_INPUT).parse_v256().to_vec();
-    let ranges5 = CharParser::new(LONG_MULTILINE_INPUT).parse_v128_portable().to_vec();
+    let ranges1 = Utf32Parser::new(LONG_MULTILINE_INPUT).parse_chars().to_vec();
+    let ranges2 = Utf32Parser::new(LONG_MULTILINE_INPUT).parse_bytes().to_vec();
+    let ranges3 = Utf32Parser::new(LONG_MULTILINE_INPUT).parse_v128().to_vec();
+    let ranges4 = Utf32Parser::new(LONG_MULTILINE_INPUT).parse_v256().to_vec();
+    let ranges5 = Utf32Parser::new(LONG_MULTILINE_INPUT).parse_v128_portable().to_vec();
 
     assert_eq!(ranges1.len(), ranges2.len());
     assert_eq!(ranges2.len(), ranges3.len());
@@ -370,35 +370,35 @@ pub mod tests {
   #[bench]
   pub fn parse_chars_bench(b: &mut Bencher) {
     b.iter(|| {
-      CharParser::new(BENCHMARK_INPUT).parse_chars();
+      Utf32Parser::new(BENCHMARK_INPUT).parse_chars();
     });
   }
 
   #[bench]
   pub fn parse_bytes_bench(b: &mut Bencher) {
     b.iter(|| {
-      CharParser::new(BENCHMARK_INPUT).parse_bytes();
+      Utf32Parser::new(BENCHMARK_INPUT).parse_bytes();
     });
   }
 
   #[bench]
   pub fn parse_v128_bench(b: &mut Bencher) {
     b.iter(|| {
-      CharParser::new(BENCHMARK_INPUT).parse_v128();
+      Utf32Parser::new(BENCHMARK_INPUT).parse_v128();
     });
   }
 
   #[bench]
   pub fn parse_v256_bench(b: &mut Bencher) {
     b.iter(|| {
-      CharParser::new(BENCHMARK_INPUT).parse_v256();
+      Utf32Parser::new(BENCHMARK_INPUT).parse_v256();
     });
   }
 
   #[bench]
   pub fn parse_v128_portable_bench(b: &mut Bencher) {
     b.iter(|| {
-      CharParser::new(BENCHMARK_INPUT).parse_v128_portable();
+      Utf32Parser::new(BENCHMARK_INPUT).parse_v128_portable();
     });
   }
 }
