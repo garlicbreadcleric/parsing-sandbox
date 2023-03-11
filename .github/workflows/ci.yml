@@ -24,6 +24,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '14.x'
+      - name: Install just
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: just
       - name: Install hyperfine
         uses: actions-rs/cargo@v1
         with:
@@ -39,22 +44,8 @@ jobs:
         run: node ./generate-md.js
 
       - name: Run unit tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: just test
       - name: Run benchmarks (reading from memory)
-        uses: actions-rs/cargo@v1
-        with:
-          command: bench
+        run: just bench-memory
       - name: Run benchmarks (reading from file)
-        run: |
-          hyperfine './target/release/parsing-sandbox chars seq' \
-            './target/release/parsing-sandbox bytes seq' \
-            './target/release/parsing-sandbox vector128 seq' \
-            './target/release/parsing-sandbox vector256 seq' \
-            './target/release/parsing-sandbox vector128portable seq' \
-            './target/release/parsing-sandbox chars par' \
-            './target/release/parsing-sandbox bytes par' \
-            './target/release/parsing-sandbox vector128 par' \
-            './target/release/parsing-sandbox vector256 par' \
-            './target/release/parsing-sandbox vector128portable par'
+        run: just bench-files
