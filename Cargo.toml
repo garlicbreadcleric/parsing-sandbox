@@ -9,3 +9,6 @@ simdutf = { git = "https://github.com/garlicbreadcleric/simdutf-rs.git", branch 
 
 [dev-dependencies]
 proptest = "1.0.0"
+
+[profile.release]
+lto = true
