@@ -26,7 +26,7 @@ pub enum OutputName {
   Utf16,
 }
 
-fn parse_char(input: &str, parser_name: ParserName) -> usize {
+fn parse_utf32(input: &str, parser_name: ParserName) -> usize {
   let mut parser = Utf32Parser::new(input);
   match parser_name {
     ParserName::Chars => parser.parse_chars(),
@@ -90,7 +90,7 @@ pub fn main() {
         let input = input.as_str();
 
         match output_name {
-          OutputName::Utf32 => sum += parse_char(input, parser_name),
+          OutputName::Utf32 => sum += parse_utf32(input, parser_name),
           OutputName::Utf16 => sum += parse_utf16(input, parser_name),
         }
       }
@@ -103,7 +103,7 @@ pub fn main() {
         let input = input.as_str();
 
         match output_name {
-          OutputName::Utf32 => parse_char(input, parser_name),
+          OutputName::Utf32 => parse_utf32(input, parser_name),
           OutputName::Utf16 => parse_utf16(input, parser_name),
         }
       })
