@@ -256,22 +256,28 @@ pub mod tests {
 
   #[bench]
   pub fn parse_chars_bench(b: &mut Bencher) {
+    let mut count = 0;
     b.iter(|| {
-      Utf16Parser::new(BENCHMARK_INPUT).parse_chars();
+      count += Utf16Parser::new(BENCHMARK_INPUT).parse_chars().len();
     });
+    assert!(count > 0);
   }
 
   #[bench]
   pub fn parse_bytes_bench(b: &mut Bencher) {
+    let mut count = 0;
     b.iter(|| {
-      Utf16Parser::new(BENCHMARK_INPUT).parse_bytes();
+      count += Utf16Parser::new(BENCHMARK_INPUT).parse_bytes().len();
     });
+    assert!(count > 0);
   }
 
   #[bench]
   pub fn parse_v128_portable_bench(b: &mut Bencher) {
+    let mut count = 0;
     b.iter(|| {
-      Utf16Parser::new(BENCHMARK_INPUT).parse_v128_portable();
+      count += Utf16Parser::new(BENCHMARK_INPUT).parse_v128_portable().len();
     });
+    assert!(count > 0);
   }
 }

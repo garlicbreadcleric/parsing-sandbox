@@ -167,6 +167,7 @@ mod tests {
     b.iter(|| {
       count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel128));
     });
+    assert!(count > 0);
   }
 
   #[bench]
@@ -175,6 +176,7 @@ mod tests {
     b.iter(|| {
       count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel256));
     });
+    assert!(count > 0);
   }
 
   #[bench]
@@ -183,6 +185,7 @@ mod tests {
     b.iter(|| {
       count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Portable128));
     });
+    assert!(count > 0);
   }
 
   #[bench]
@@ -191,6 +194,7 @@ mod tests {
     b.iter(|| {
       count += count_utf8_characters_scalar(BENCHMARK_INPUT.as_bytes());
     });
+    assert!(count > 0);
   }
 
   #[bench]
@@ -199,6 +203,7 @@ mod tests {
     b.iter(|| {
       count += BENCHMARK_INPUT.chars().count();
     });
+    assert!(count > 0);
   }
 
   #[bench]
@@ -208,5 +213,6 @@ mod tests {
     b.iter(|| {
       count += unsafe { simdutf::count_utf32_from_utf8(BENCHMARK_INPUT.as_bytes()) };
     });
+    assert!(count > 0);
   }
 }

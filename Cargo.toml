@@ -11,4 +11,4 @@ simdutf = { git = "https://github.com/garlicbreadcleric/simdutf-rs.git", branch 
 proptest = "1.0.0"
 
 [profile.release]
-lto = true
+codegen-units = 1
