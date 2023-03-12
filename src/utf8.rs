@@ -163,56 +163,32 @@ mod tests {
 
   #[bench]
   pub fn count_characters_vector128_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel128));
-    });
-    assert!(count > 0);
+    b.iter(|| count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel128)));
   }
 
   #[bench]
   pub fn count_characters_vector256_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel256));
-    });
-    assert!(count > 0);
+    b.iter(|| count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Intel256)));
   }
 
   #[bench]
   pub fn count_characters_vector128_portable_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Portable128));
-    });
-    assert!(count > 0);
+    b.iter(|| count_utf8_characters(BENCHMARK_INPUT.as_bytes(), Some(Vectorization::Portable128)));
   }
 
   #[bench]
   pub fn count_characters_bytes_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += count_utf8_characters_scalar(BENCHMARK_INPUT.as_bytes());
-    });
-    assert!(count > 0);
+    b.iter(|| count_utf8_characters_scalar(BENCHMARK_INPUT.as_bytes()));
   }
 
   #[bench]
   pub fn count_characters_chars_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += BENCHMARK_INPUT.chars().count();
-    });
-    assert!(count > 0);
+    b.iter(|| BENCHMARK_INPUT.chars().count());
   }
 
   #[bench]
   #[cfg(not(miri))]
   pub fn count_characters_simdutf(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += unsafe { simdutf::count_utf32_from_utf8(BENCHMARK_INPUT.as_bytes()) };
-    });
-    assert!(count > 0);
+    b.iter(|| unsafe { simdutf::count_utf32_from_utf8(BENCHMARK_INPUT.as_bytes()) });
   }
 }

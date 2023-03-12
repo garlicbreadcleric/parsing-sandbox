@@ -369,46 +369,26 @@ pub mod tests {
 
   #[bench]
   pub fn parse_chars_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += Utf32Parser::new(BENCHMARK_INPUT).parse_chars().len();
-    });
-    assert!(count > 0);
+    b.iter(|| Utf32Parser::new(BENCHMARK_INPUT).parse_chars().len());
   }
 
   #[bench]
   pub fn parse_bytes_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += Utf32Parser::new(BENCHMARK_INPUT).parse_bytes().len();
-    });
-    assert!(count > 0);
+    b.iter(|| Utf32Parser::new(BENCHMARK_INPUT).parse_bytes().len());
   }
 
   #[bench]
   pub fn parse_v128_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += Utf32Parser::new(BENCHMARK_INPUT).parse_v128().len();
-    });
-    assert!(count > 0);
+    b.iter(|| Utf32Parser::new(BENCHMARK_INPUT).parse_v128().len());
   }
 
   #[bench]
   pub fn parse_v256_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += Utf32Parser::new(BENCHMARK_INPUT).parse_v256().len();
-    });
-    assert!(count > 0);
+    b.iter(|| Utf32Parser::new(BENCHMARK_INPUT).parse_v256().len());
   }
 
   #[bench]
   pub fn parse_v128_portable_bench(b: &mut Bencher) {
-    let mut count = 0;
-    b.iter(|| {
-      count += Utf32Parser::new(BENCHMARK_INPUT).parse_v128_portable().len();
-    });
-    assert!(count > 0);
+    b.iter(|| Utf32Parser::new(BENCHMARK_INPUT).parse_v128_portable().len());
   }
 }
