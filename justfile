@@ -34,5 +34,6 @@ bench-files: build prepare-bench-data
         './target/release/parsing-sandbox chars par utf16' \
         './target/release/parsing-sandbox bytes par utf16' \
         './target/release/parsing-sandbox vector128portable par utf16' \
+        './target/release/parsing-sandbox vector128portable parbuf utf16'
 
 bench: bench-memory bench-files

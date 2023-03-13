@@ -1,5 +1,6 @@
 #![feature(test)]
 #![feature(portable_simd)]
+#![feature(buf_read_has_data_left)]
 #![warn(
   // Pedantic.
   clippy::needless_continue,
@@ -46,6 +47,7 @@
 #![deny(clippy::semicolon_if_nothing_returned)]
 
 pub mod types;
+pub mod utf16_buf_parser;
 pub mod utf16_parser;
 pub mod utf32_parser;
 pub mod utf8;

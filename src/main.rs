@@ -1,5 +1,8 @@
+use std::fs::File;
+use std::io::BufReader;
 use std::process::exit;
 
+use parsing_sandbox::utf16_buf_parser::Utf16BufParser;
 use rayon::prelude::*;
 
 use parsing_sandbox::utf16_parser::*;
@@ -18,6 +21,7 @@ pub enum ParserName {
 pub enum ModeName {
   Seq,
   Par,
+  ParBuf,
 }
 
 #[derive(Copy, Clone)]
@@ -67,8 +71,9 @@ pub fn main() {
   let mode_name = match args.get(2).map(|s| s.as_str()) {
     Some("seq") => ModeName::Seq,
     Some("par") => ModeName::Par,
+    Some("parbuf") => ModeName::ParBuf,
     _ => {
-      eprintln!("Expected second argument to be mode name (one of: 'seq', 'par').");
+      eprintln!("Expected second argument to be mode name (one of: 'seq', 'par', 'parbuf').");
       exit(1);
     }
   };
@@ -106,6 +111,17 @@ pub fn main() {
           OutputName::Utf32 => parse_utf32(input, parser_name),
           OutputName::Utf16 => parse_utf16(input, parser_name),
         }
+      })
+      .sum(),
+    ModeName::ParBuf => (0..100)
+      .into_par_iter()
+      .map(|i| {
+        let file = File::open(format!("input/input-{}.txt", i)).unwrap();
+        let mut reader = BufReader::new(file);
+        let mut parser = Utf16BufParser::new();
+
+        let ranges = parser.parse_from_reader(&mut reader);
+        ranges.len()
       })
       .sum(),
   };
