@@ -86,8 +86,8 @@ pub fn main() {
     ModeName::Seq => {
       let mut sum = 0;
       for i in 0..100 {
-        let input = std::fs::read_to_string(format!("input/input-{}.txt", i)).unwrap();
-        let input = input.as_str();
+        let input = std::fs::read(format!("input/input-{}.txt", i)).unwrap();
+        let input = simdutf8::basic::from_utf8(&input).unwrap();
 
         match output_name {
           OutputName::Utf32 => sum += parse_utf32(input, parser_name),
@@ -99,8 +99,8 @@ pub fn main() {
     ModeName::Par => (0..100)
       .into_par_iter()
       .map(|i| {
-        let input = std::fs::read_to_string(format!("input/input-{}.txt", i)).unwrap();
-        let input = input.as_str();
+        let input = std::fs::read(format!("input/input-{}.txt", i)).unwrap();
+        let input = simdutf8::compat::from_utf8(&input).unwrap();
 
         match output_name {
           OutputName::Utf32 => parse_utf32(input, parser_name),

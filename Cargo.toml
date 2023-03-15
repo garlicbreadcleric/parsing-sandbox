@@ -6,9 +6,14 @@ edition = "2021"
 [dependencies]
 rayon = "1.7"
 simdutf = { git = "https://github.com/garlicbreadcleric/simdutf-rs.git", branch = "main" }
+simdutf8 = "0.1"
 
 [dev-dependencies]
 proptest = "1.0.0"
 
 [profile.release]
 codegen-units = 1
+
+[profile.profiling]
+inherits = "release"
+debug = true
