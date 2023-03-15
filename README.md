@@ -22,57 +22,61 @@ Note that hyperfine measurements include time needed to read file contents into 
 
 #### Smaller input
 
-| count.chars        | count.bytes          | count.vector128    | countt.vector256     | count.vector128portable |
-|--------------------|----------------------|--------------------|----------------------|-------------------------|
-| 36 ns/iter (+/- 1) | 197 ns/iter (+/- 16) | 85 ns/iter (+/- 8) | 556 ns/iter (+/- 89) | 123 ns/iter (+/- 5)     |
+| count.chars | count.bytes | count.vector128 | count.vector256 | count.vector128portable |
+|-------------|-------------|-----------------|-----------------|-------------------------|
+| 36 ns/iter  | 197 ns/iter | 85 ns/iter      | 556 ns/iter     | 123 ns/iter             |
 
 #### Larger input
 
-| count.chars         | count.bytes          | count.vector128      | count.vector256 | count.vector128portable |
-|---------------------|----------------------|----------------------|-----------------|-------------------------|
-| 199 ns/iter (+/- 9) | 934 ns/iter (+/- 27) | 464 ns/iter (+/- 84) | 2,933 ns/iter   | 646 ns/iter (+/- 28)    |
+| count.chars | count.bytes | count.vector128 | count.vector256 | count.vector128portable |
+|-------------|-------------|-----------------|-----------------|-------------------------|
+| 201 ns/iter | 838 ns/iter | 429 ns/iter     | 2,448 ns/iter   | 590 ns/iter             |
 
 ### Parsing \[pairs of square brackets\] and producing character offsets
 
 #### From memory (smaller input)
 
-| parse.utf32.chars       | parse.utf32.bytes      | parse.utf32.vector128 | parse.utf32.vector256  | parse.utf32.vector128portable |
-|-------------------------|------------------------|-----------------------|------------------------|-------------------------------|
-| 1,220 ns/iter (+/- 100) | 1,005 ns/iter (+/- 53) | 977 ns/iter (+/- 41)  | 1,393 ns/iter (+/- 59) | 1,044 ns/iter (+/- 47)        |
+| parse.utf32.chars | parse.utf32.bytes | parse.utf32.vector128 | parse.utf32.vector256 | parse.utf32.vector128portable |
+|-------------------|-------------------|-----------------------|-----------------------|-------------------------------|
+| 1,220 ns/iter     | 1,005 ns/iter     | 977 ns/iter           | 1,393 ns/iter         | 1,044 ns/iter                 |
 
 #### From memory (larger input)
 
-| parse.utf32.chars       | parse.utf32.bytes       | parse.utf32.vector128   | parse.utf32.vector256   | parse.utf32.vector128portable |
-|-------------------------|-------------------------|-------------------------|-------------------------|-------------------------------|
-| 6,702 ns/iter (+/- 821) | 4,308 ns/iter (+/- 185) | 2,123 ns/iter (+/- 105) | 5,676 ns/iter (+/- 259) | 2,197 ns/iter (+/- 112)       |
+| parse.utf32.chars | parse.utf32.bytes | parse.utf32.vector128 | parse.utf32.vector256 | parse.utf32.vector128portable |
+|-------------------|-------------------|-----------------------|-----------------------|-------------------------------|
+| 6,432 ns/iter     | 4,903 ns/iter     | 2,213 ns/iter         | 5,870 ns/iter         | 2,125 ns/iter                 |
 
 #### From files (~375 MB, sequential)
 
-| parse.utf32.chars      | parse.utf32.bytes      | parse.utf32.vector128   | parse.utf32.vector256  | parse.utf32.vector128portable |
-|------------------------|------------------------|-------------------------|------------------------|-------------------------------|
-| 1,251 ms/iter (+/- 20) | 1,004 ms/iter (+/- 13) | 731.0 ms/iter (+/- 7.5) | 1,167 ms/iter (+/- 12) | 739.7 ms/iter (+/- 8.1)       |
+| parse.utf32.chars | parse.utf32.bytes | parse.utf32.vector128 | parse.utf32.vector256 | parse.utf32.vector128portable |
+|-------------------|-------------------|-----------------------|-----------------------|-------------------------------|
+| 930.7 ms/iter     | 721.3 ms/iter     | 370.4 ms/iter         | 811.0 ms/iter         | 362.5 ms/iter                 |
 
 #### From files (~375 MB, parallel)
 
-| parse.utf32.chars       | parse.utf32.bytes       | parse.utf32.vector128   | parse.utf32.vector256    | parse.utf32.vector128portable |
-|-------------------------|-------------------------|-------------------------|--------------------------|-------------------------------|
-| 277.3 ms/iter (+/- 7.7) | 228.2 ms/iter (+/- 2.3) | 173.8 ms/iter (+/- 4.4) | 280.4 ms/iter (+/- 21.6) | 180.6 ms/iter (+/- 2.0)       |
+| parse.utf32.chars | parse.utf32.bytes | parse.utf32.vector128 | parse.utf32.vector256 | parse.utf32.vector128portable |
+|-------------------|-------------------|-----------------------|-----------------------|-------------------------------|
+| 190.3 ms/iter     | 164.4 ms/iter     | 99.8 ms/iter          | 183.0 ms/iter         | 98.8 ms/iter                  |
 
 ### Parsing \[pairs of square brackets\] and producing UTF-16 code point offsets
 
 #### From memory (larger input)
 
-| parse.utf16.chars       | parse.utf16.bytes[^utf16-bytes-parser] | parse.utf16.vector128portable |
-|-------------------------|----------------------------------------|-------------------------------|
-| 6,847 ns/iter (+/- 459) | 4,047 ns/iter (+/- 169)                | 1,336 ns/iter (+/- 54)        |
+| parse.utf16.chars | parse.utf16.bytes[^utf16-bytes-parser] | parse.utf16.vector128portable |
+|-------------------|----------------------------------------|-------------------------------|
+| 5,519 ns/iter     | 4,057 ns/iter                          | 1,120 ns/iter                 |
 
 #### From files (~375 MB, sequential)
 
-_to do_
+| parse.utf16.chars | parse.utf16.bytes | parse.utf16.vector128portable |
+|-------------------|-------------------|-------------------------------|
+| 805.5 ms/iter     | 589.9 ms/iter     | 237.7 ms/iter                 |
 
 #### From files (~375 MB, parallel)
 
-_to do_
+| parse.utf16.chars | parse.utf16.bytes | parse.utf16.vector128portable |
+|-------------------|-------------------|-------------------------------|
+| 185.2 ms/iter     | 145.6 ms/iter     | 80.9 ms/iter                  |
 
 ## Discussion
 
