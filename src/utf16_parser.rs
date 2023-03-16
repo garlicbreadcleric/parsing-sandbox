@@ -65,28 +65,26 @@ impl<'a> Utf16Parser<'a> {
       let character_width = get_character_width(byte);
       self.offset += character_width;
 
-      if character_width == 1 {
-        match (byte, self.range_start) {
-          (b'\n', _) => {
-            self.line += 1;
-            self.character_offset = self.offset;
-            self.character = 0;
-          }
-          (b'[', None) => {
-            self.character += unsafe { simdutf::count_utf16_from_utf8(&bytes[self.character_offset..self.offset - 1]) };
-            self.character_offset = self.offset - 1;
-            self.range_start = Some(Position { line: self.line, character: self.character, offset: self.offset - 1 });
-          }
-          (b']', Some(start)) => {
-            self.character += unsafe { simdutf::count_utf16_from_utf8(&bytes[self.character_offset..self.offset]) };
-            self.character_offset = self.offset;
-            self
-              .ranges
-              .push(Range { start, end: Position { line: self.line, character: self.character, offset: self.offset } });
-            self.range_start = None;
-          }
-          _ => {}
+      match (byte, self.range_start) {
+        (b'\n', _) => {
+          self.line += 1;
+          self.character_offset = self.offset;
+          self.character = 0;
         }
+        (b'[', None) => {
+          self.character += unsafe { simdutf::count_utf16_from_utf8(&bytes[self.character_offset..self.offset - 1]) };
+          self.character_offset = self.offset - 1;
+          self.range_start = Some(Position { line: self.line, character: self.character, offset: self.offset - 1 });
+        }
+        (b']', Some(start)) => {
+          self.character += unsafe { simdutf::count_utf16_from_utf8(&bytes[self.character_offset..self.offset]) };
+          self.character_offset = self.offset;
+          self
+            .ranges
+            .push(Range { start, end: Position { line: self.line, character: self.character, offset: self.offset } });
+          self.range_start = None;
+        }
+        _ => {}
       }
     }
   }

@@ -69,21 +69,19 @@ impl<'a> Utf32Parser<'a> {
       self.position.offset += character_width;
       self.position.character += 1;
 
-      if character_width == 1 {
-        match (byte, self.range_start) {
-          (b'\n', _) => {
-            self.position.line += 1;
-            self.position.character = 0;
-          }
-          (b'[', None) => {
-            self.range_start = Some(previous_position);
-          }
-          (b']', Some(start)) => {
-            self.ranges.push(Range { start, end: self.position });
-            self.range_start = None;
-          }
-          _ => {}
+      match (byte, self.range_start) {
+        (b'\n', _) => {
+          self.position.line += 1;
+          self.position.character = 0;
         }
+        (b'[', None) => {
+          self.range_start = Some(previous_position);
+        }
+        (b']', Some(start)) => {
+          self.ranges.push(Range { start, end: self.position });
+          self.range_start = None;
+        }
+        _ => {}
       }
     }
   }
