@@ -55,7 +55,7 @@ impl<'a> Utf32Parser<'a> {
     let max_offset = (self.position.offset + limit).min(bytes.len());
 
     while self.position.offset < max_offset {
-      let byte = bytes[self.position.offset];
+      let &byte = unsafe { bytes.get_unchecked(self.position.offset) };
 
       let previous_position = self.position;
 

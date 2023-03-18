@@ -60,7 +60,7 @@ impl<'a> Utf16Parser<'a> {
     let max_offset = (self.offset + limit).min(bytes.len());
 
     while self.offset < max_offset {
-      let byte = bytes[self.offset];
+      let &byte = unsafe { bytes.get_unchecked(self.offset) };
 
       let character_width = get_character_width(byte);
       self.offset += character_width;
